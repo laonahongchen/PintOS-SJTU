@@ -134,20 +134,31 @@ pintos_init (void)
     run_actions (argv);
   } else {
       input_init();
-      uint8_t st[20];
+      uint8_t st[40];
       int len;
       while (1) {
 	  printf("PINTOS>");
 	  len = 0;
-	  for (int i = 0; i < 20; i = i + 1) {
-	      st[len] = input_getc();
-	      printf("%c", st[len]);
-	      len = len + 1;
-	      if (st[len - 1] == 13) {
-		  printf("\n");
+	  while (len < 40) {
+	      uint8_t ch = input_getc();
+	      if (ch == 13) {
 		  st[len] = '\0';
 		  break;
+	      } else if (ch == 8) {
+		  if (len) {
+		      putbuf("\b \b", 3);
+		      len = len - 1;
+		  }
+	      } else {
+		  st[len] = ch;
+		  len = len + 1;
+		  printf("%c", ch);
 	      }
+	  }
+	  printf("\n");
+	  if (len == 40) {
+	      printf("Command Is Too Long\n");
+	      continue;
 	  }
 	  if (!strcmp(st, "Who Am I")) {
 	      printf("I Am Paddle Champion!!!\n");
