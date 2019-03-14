@@ -88,6 +88,10 @@ struct thread
     char name[16];                      /* Name (for debugging purposes). */
     uint8_t *stack;                     /* Saved stack pointer. */
     int priority;                       /* Priority. */
+
+    int recent_cpu;
+    int nice;
+
     struct list_elem allelem;           /* List element for all threads list. */
 
     /* Shared between thread.c and synch.c. */
@@ -140,6 +144,24 @@ void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 
-void blocked_thread_check (struct thread *t, void *aux UNUSED);
+void increase_recent_cpu (struct thread *t);
+void update_priority (struct thread *t);
+
+void update_load_avg ();
+void update_recent_cpu ();
+
+void blocked_thread_check (struct thread *t);
+
+int Add(int x, int y);
+int Add_n(int x, int y);
+int Sub(int x, int y);
+int Sub_n(int x, int y);
+int Mult(int x, int y);
+int Mult_n(int x, int y);
+int Div(int x, int y);
+int Div_n(int x, int y);
+int toFloat(int x);
+int toInt(int x);
+int toRound(int x);
 
 #endif /* threads/thread.h */
