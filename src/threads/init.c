@@ -133,6 +133,42 @@ pintos_init (void)
     /* Run actions specified on kernel command line. */
     run_actions (argv);
   } else {
+      input_init();
+      uint8_t st[40];
+      int len;
+      while (1) {
+	  printf("PINTOS>");
+	  len = 0;
+	  while (len < 40) {
+	      uint8_t ch = input_getc();
+	      if (ch == 13) {
+		  st[len] = '\0';
+		  break;
+	      } else if (ch == 8) {
+		  if (len) {
+		      putbuf("\b \b", 3);
+		      len = len - 1;
+		  }
+	      } else {
+		  st[len] = ch;
+		  len = len + 1;
+		  printf("%c", ch);
+	      }
+	  }
+	  printf("\n");
+	  if (len == 40) {
+	      printf("Command Is Too Long\n");
+	      continue;
+	  }
+	  if (!strcmp(st, "Who Am I")) {
+	      printf("I Am Paddle Champion!!!\n");
+	      continue;
+	  }
+	  if (!strcmp(st, "exit")) {
+	      break;
+	  }
+	  printf("invalid command.\n");
+      }
     // TODO: no command line passed to kernel. Run interactively 
   }
 
