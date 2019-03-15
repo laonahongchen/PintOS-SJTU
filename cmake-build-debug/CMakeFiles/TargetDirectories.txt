@@ -1,0 +1,3 @@
+/home/lizhaoyu/pintos/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/lizhaoyu/pintos/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/lizhaoyu/pintos/cmake-build-debug/CMakeFiles/pintos.dir

@@ -65,6 +65,8 @@ static char **parse_options (char **argv);
 static void run_actions (char **argv);
 static void usage (void);
 
+static void readline (void);
+
 #ifdef FILESYS
 static void locate_block_devices (void);
 static void locate_block_device (enum block_type, const char *name);
@@ -78,7 +80,7 @@ pintos_init (void)
 {
   char **argv;
 
-  /* Clear BSS. */
+  /* Clear BSS. */  
   bss_init ();
 
   /* Break command line into arguments and parse options. */
@@ -88,7 +90,7 @@ pintos_init (void)
   /* Initialize ourselves as a thread so we can use locks,
      then enable console locking. */
   thread_init ();
-  console_init ();
+  console_init ();  
 
   /* Greet user. */
   printf ("Pintos booting with %'"PRIu32" kB RAM...\n",
@@ -133,43 +135,8 @@ pintos_init (void)
     /* Run actions specified on kernel command line. */
     run_actions (argv);
   } else {
-      input_init();
-      uint8_t st[40];
-      int len;
-      while (1) {
-	  printf("PINTOS>");
-	  len = 0;
-	  while (len < 40) {
-	      uint8_t ch = input_getc();
-	      if (ch == 13) {
-		  st[len] = '\0';
-		  break;
-	      } else if (ch == 8) {
-		  if (len) {
-		      putbuf("\b \b", 3);
-		      len = len - 1;
-		  }
-	      } else {
-		  st[len] = ch;
-		  len = len + 1;
-		  printf("%c", ch);
-	      }
-	  }
-	  printf("\n");
-	  if (len == 40) {
-	      printf("Command Is Too Long\n");
-	      continue;
-	  }
-	  if (!strcmp(st, "Who Am I")) {
-	      printf("I Am Paddle Champion!!!\n");
-	      continue;
-	  }
-	  if (!strcmp(st, "exit")) {
-	      break;
-	  }
-	  printf("invalid command.\n");
-      }
     // TODO: no command line passed to kernel. Run interactively 
+    //readline();
   }
 
   /* Finish up. */
@@ -184,7 +151,7 @@ pintos_init (void)
    The start and end of the BSS segment is recorded by the
    linker as _start_bss and _end_bss.  See kernel.lds. */
 static void
-bss_init (void)
+bss_init (void) 
 {
   extern char _start_bss, _end_bss;
   memset (&_start_bss, 0, &_end_bss - &_start_bss);
@@ -231,7 +198,7 @@ paging_init (void)
 /* Breaks the kernel command line into words and returns them as
    an argv-like array. */
 static char **
-read_command_line (void)
+read_command_line (void) 
 {
   static char *argv[LOADER_ARGS_LEN / 2 + 1];
   char *p, *end;
@@ -241,7 +208,7 @@ read_command_line (void)
   argc = *(uint32_t *) ptov (LOADER_ARG_CNT);
   p = ptov (LOADER_ARGS);
   end = p + LOADER_ARGS_LEN;
-  for (i = 0; i < argc; i++)
+  for (i = 0; i < argc; i++) 
     {
       if (p >= end)
         PANIC ("command line arguments overflow");
@@ -266,14 +233,14 @@ read_command_line (void)
 /* Parses options in ARGV[]
    and returns the first non-option argument. */
 static char **
-parse_options (char **argv)
+parse_options (char **argv) 
 {
   for (; *argv != NULL && **argv == '-'; argv++)
     {
       char *save_ptr;
       char *name = strtok_r (*argv, "=", &save_ptr);
       char *value = strtok_r (NULL, "", &save_ptr);
-
+      
       if (!strcmp (name, "-h"))
         usage ();
       else if (!strcmp (name, "-q"))
@@ -313,7 +280,7 @@ parse_options (char **argv)
      for reproducibility.  To fix this, give the "-r" option to
      the pintos script to request real-time execution. */
   random_init (rtc_get_time ());
-
+  
   return argv;
 }
 
@@ -322,7 +289,7 @@ static void
 run_task (char **argv)
 {
   const char *task = argv[1];
-
+  
   printf ("Executing '%s':\n", task);
 #ifdef USERPROG
   process_wait (process_execute (task));
@@ -335,10 +302,10 @@ run_task (char **argv)
 /* Executes all of the actions specified in ARGV[]
    up to the null pointer sentinel. */
 static void
-run_actions (char **argv)
+run_actions (char **argv) 
 {
   /* An action. */
-  struct action
+  struct action 
     {
       char *name;                       /* Action name. */
       int argc;                         /* # of args, including action name. */
@@ -346,7 +313,7 @@ run_actions (char **argv)
     };
 
   /* Table of supported actions. */
-  static const struct action actions[] =
+  static const struct action actions[] = 
     {
       {"run", 2, run_task},
 #ifdef FILESYS
@@ -380,7 +347,7 @@ run_actions (char **argv)
       a->function (argv);
       argv += a->argc;
     }
-
+  
 }
 
 /* Prints a kernel command line help message and powers off the
@@ -467,3 +434,58 @@ locate_block_device (enum block_type role, const char *name)
     }
 }
 #endif
+
+static void 
+readline (void)
+{
+  uint8_t token;
+  uint8_t readline[64];
+  uint32_t lenth = 0;
+  printf("%s", "pintos> $ ");
+  while(token = input_getc())
+  {
+    if(token == '\b')
+    {
+      if(lenth > 0)
+      {
+        printf("\b \b");
+        readline[--lenth] = '\0';
+      }
+    }
+    else 
+    {
+      printf("%c", token);
+    }
+
+    if(token != '\n' && token != '\r' && token != '\b')
+    {
+      readline[lenth++] = token;
+    }
+    else
+    {
+      readline[lenth] = '\0';
+    }
+
+    if(token == '\n' || token == '\r')
+    {
+      printf("%s", "pintos> $ ");
+      printf("%s\n", readline);
+      if(strcmp(readline, "exit") == 0)
+      {
+        break;
+      }
+      else if(strcmp(readline, "whoami") == 0)
+      {
+        printf("%s", "pintos> $ ");
+        printf("%s\n", "I am Apollo");
+      }
+      else
+      {
+        printf("%s", "pintos> $ ");
+        printf("%s\n", "Invalid command");
+      }
+      lenth = 0;
+      printf("%s", "pintos> $ ");
+    }
+  };
+}
