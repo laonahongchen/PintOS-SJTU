@@ -68,7 +68,11 @@ sema_down (struct semaphore *sema)
   old_level = intr_disable ();
   while (sema->value == 0) 
     {
-      list_push_back (&sema->waiters, &thread_current ()->elem);
+      struct thread *cur = thread_current();
+      list_push_back (&sema->waiters, &cur->elem);
+      struct thread *max_priority = list_entry(list_max(&sema->waiters, less_priority, (void*)0), struct thread, elem);
+      cur->old_priority = cur->priority;
+      cur->priority = max_priority->priority;
       thread_block ();
     }
   sema->value--;
@@ -113,9 +117,11 @@ sema_up (struct semaphore *sema)
   ASSERT (sema != NULL);
 
   old_level = intr_disable ();
-  if (!list_empty (&sema->waiters)) 
-    thread_unblock (list_entry (list_pop_front (&sema->waiters),
-                                struct thread, elem));
+  if (!list_empty (&sema->waiters)) {
+    struct thread *thread_up = list_entry (list_pop_front (&sema->waiters), struct thread, elem);
+    thread_up->priority = thread_up->old_priority;
+    thread_unblock (thread_up);
+  }
   sema->value++;
   intr_set_level (old_level);
 }
@@ -189,6 +195,10 @@ lock_init (struct lock *lock)
    interrupt handler.  This function may be called with
    interrupts disabled, but interrupts will be turned back on if
    we need to sleep. */
+bool less_priority(struct thread *a, struct thread *b) {
+    return a->priority < b->priority;
+}
+
 void
 lock_acquire (struct lock *lock)
 {
