@@ -150,7 +150,7 @@ void update_priority (struct thread *t);
 void update_load_avg ();
 void update_recent_cpu ();
 
-void blocked_thread_check (struct thread *t);
+void blocked_thread_check (struct thread *t, void *aux UNUSED);
 
 int Add(int x, int y);
 int Add_n(int x, int y);

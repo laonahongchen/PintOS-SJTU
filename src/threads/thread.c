@@ -181,12 +181,10 @@ thread_create (const char *name, int priority,
 
   /* Allocate thread. */
   t = palloc_get_page (PAL_ZERO);
-  t->nice = 0;
-  t->recent_cpu = 0;
-  t->ticks_blocked = 0;
+
   if (t == NULL)
     return TID_ERROR;
-
+  
   /* Initialize thread. */
   init_thread (t, name, priority);
   tid = t->tid = allocate_tid ();
@@ -205,6 +203,8 @@ thread_create (const char *name, int priority,
   sf = alloc_frame (t, sizeof *sf);
   sf->eip = switch_entry;
   sf->ebp = 0;
+
+  t->ticks_blocked = 0;  
 
   /* Add to run queue. */
   thread_unblock (t);
@@ -340,7 +340,7 @@ thread_foreach (thread_action_func *func, void *aux)
 }
 
 void
-blocked_thread_check (struct thread *t)
+blocked_thread_check (struct thread *t, void *aux)
 {
   if (t->status == THREAD_BLOCKED && t->ticks_blocked > 0)
   {
@@ -526,6 +526,9 @@ init_thread (struct thread *t, const char *name, int priority)
   t->stack = (uint8_t *) t + PGSIZE;
   t->priority = priority;
   t->magic = THREAD_MAGIC;
+
+  t->nice = 0;
+  t->recent_cpu = 0;
 
   old_level = intr_disable ();
   list_push_back (&all_list, &t->allelem);
