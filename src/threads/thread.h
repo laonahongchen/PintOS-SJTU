@@ -23,6 +23,9 @@ typedef int tid_t;
 #define PRI_MIN 0                       /* Lowest priority. */
 #define PRI_DEFAULT 31                  /* Default priority. */
 #define PRI_MAX 63                      /* Highest priority. */
+#define NICE_MIN -20
+#define NICE_DEFAULT 0
+#define NICE_MAX 20
 
 /* A kernel thread or user process.
 
@@ -98,7 +101,7 @@ struct thread
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
 
-    int64_t ticks_blocked;
+    int64_t wakeup_time;
 
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
@@ -133,6 +136,9 @@ const char *thread_name (void);
 void thread_exit (void) NO_RETURN;
 void thread_yield (void);
 
+void thread_sleep(int64_t ticks);
+void block_thread_check(void);
+
 /* Performs some operation on thread t, given auxiliary data AUX. */
 typedef void thread_action_func (struct thread *t, void *aux);
 void thread_foreach (thread_action_func *, void *);
@@ -146,23 +152,10 @@ int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 
 void increase_recent_cpu (struct thread *t);
-void update_priority (struct thread *t);
+void update_priority (struct thread *t, void *aux UNUSED);
+void update_priority_for_each (void);
 
-void update_load_avg ();
-void update_recent_cpu ();
-
-void blocked_thread_check (struct thread *t, void *aux UNUSED);
-
-int Add(int x, int y);
-int Add_n(int x, int y);
-int Sub(int x, int y);
-int Sub_n(int x, int y);
-int Mult(int x, int y);
-int Mult_n(int x, int y);
-int Div(int x, int y);
-int Div_n(int x, int y);
-int toFloat(int x);
-int toInt(int x);
-int toRound(int x);
+void update_load_avg (void);
+void update_recent_cpu (void);
 
 #endif /* threads/thread.h */
