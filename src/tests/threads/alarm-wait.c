@@ -70,13 +70,13 @@ test_sleep (int thread_cnt, int iterations)
   output = malloc (sizeof *output * iterations * thread_cnt * 2);
   if (threads == NULL || output == NULL)
     PANIC ("couldn't allocate memory for test");
-
+  msg ("1");
   /* Initialize test. */
   test.start = timer_ticks () + 100;
   test.iterations = iterations;
   lock_init (&test.output_lock);
   test.output_pos = output;
-
+  msg ("2");
   /* Start threads. */
   ASSERT (output != NULL);
   for (i = 0; i < thread_cnt; i++)
@@ -92,10 +92,10 @@ test_sleep (int thread_cnt, int iterations)
       snprintf (name, sizeof name, "thread %d", i);
       thread_create (name, PRI_DEFAULT, sleeper, t);
     }
-  
+  msg ("3");
   /* Wait long enough for all the threads to finish. */
   timer_sleep (100 + thread_cnt * iterations * 10 + 100);
-
+  msg ("4");
   /* Acquire the output lock in case some rogue thread is still
      running. */
   lock_acquire (&test.output_lock);

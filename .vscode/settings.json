@@ -36,6 +36,7 @@
         "tuple": "c",
         "typeinfo": "c",
         "utility": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "process.h": "c"
     }
 }
