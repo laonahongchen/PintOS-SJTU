@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.12)
-project(pintos C)
+cmake_minimum_required(VERSION 3.14)
+project(pos C)
 
 set(CMAKE_C_STANDARD 11)
 
@@ -18,7 +18,7 @@ include_directories(src/tests/vm)
 include_directories(src/threads)
 include_directories(src/userprog)
 
-add_executable(pintos
+add_executable(pos
         src/devices/block.c
         src/devices/block.h
         src/devices/ide.c
@@ -311,6 +311,7 @@ add_executable(pintos
         src/tests/lib.h
         src/tests/main.c
         src/tests/main.h
+        src/threads/fixed_point.h
         src/threads/flags.h
         src/threads/init.c
         src/threads/init.h
