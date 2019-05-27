@@ -9,6 +9,9 @@
 #include <thread.h>
 #include <palloc.h>
 #include <flags.h>
+#include <vaddr.h>
+#include <file.h>
+#include <filesys.h>
 #include "userprog/gdt.h"
 #include "userprog/pagedir.h"
 #include "userprog/tss.h"
@@ -22,6 +25,7 @@
 #include "threads/thread.h"
 #include "threads/vaddr.h"
 #include "gdt.h"
+#include "pagedir.h"
 
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
@@ -35,6 +39,9 @@ process_execute (const char *file_name)
 {
   char *fn_copy;
   tid_t tid;
+  char *name;
+  name = palloc_get_page(0);
+  strlcpy(name, file_name, PGSIZE);
 
   /* Make a copy of FILE_NAME.
      Otherwise there's a race between the caller and load(). */
@@ -43,10 +50,16 @@ process_execute (const char *file_name)
     return TID_ERROR;
   strlcpy (fn_copy, file_name, PGSIZE);
 
+  /* Parse the real name of the executeable*/
+  char *real_name, *save_ptr;
+  real_name = strtok_r(name, " ", &save_ptr);
+
   /* Create a new thread to execute FILE_NAME. */
-  tid = thread_create (file_name, PRI_DEFAULT, start_process, fn_copy);
+  tid = thread_create (real_name, PRI_DEFAULT, start_process, fn_copy);
   if (tid == TID_ERROR)
-    palloc_free_page (fn_copy); 
+    palloc_free_page (fn_copy);
+  palloc_free_page(name);
+  list_push_back(&thread_current() ->child_list, &get_child_info(tid) ->elem);
   return tid;
 }
 
@@ -64,7 +77,12 @@ start_process (void *file_name_)
   if_.gs = if_.fs = if_.es = if_.ds = if_.ss = SEL_UDSEG;
   if_.cs = SEL_UCSEG;
   if_.eflags = FLAG_IF | FLAG_MBS;
-  success = load (file_name, &if_.eip, &if_.esp);
+
+  /* Parse the input name to get the real executable name */
+  char *save_ptr, *token;
+  token = strtok_r(file_name, " ", &save_ptr);
+
+  success = load (token, &if_.eip, &if_.esp);
 
   /* If load failed, quit. */
   palloc_free_page (file_name);
@@ -77,6 +95,27 @@ start_process (void *file_name_)
      arguments on the stack in the form of a `struct intr_frame',
      we just point the stack pointer (%esp) to our stack frame
      and jump to it. */
+  char *esp = (char *)if_.esp;
+  char *args[256];
+  int i, n = 0;
+  for(; token != NULL; token = strtok_r(NULL, "", &save_ptr)) {
+    esp -= strlen(token) + 1;
+    strlcpy(esp, token, strlen(token) + 1);
+    args[n++] = esp;
+  }
+  esp -= (int)esp % 4;
+  int *p = esp - 4;
+  *p-- = 0;
+  for(int i = n - 1; i >= 0; --i) {
+    *p-- = args[i];
+  }
+  *p-- = p + 1;
+  *p-- = n;
+  *p-- = 0;
+  esp = p + 1;
+  if_.esp = esp;
+  palloc_free_page(file_name);
+
   asm volatile ("movl %0, %%esp; jmp intr_exit" : : "g" (&if_) : "memory");
   NOT_REACHED ();
 }
@@ -93,6 +132,24 @@ start_process (void *file_name_)
 int
 process_wait (tid_t child_tid UNUSED) 
 {
+  if (child_tid == -1)
+    return -1;
+  struct list_elem *e;
+  struct thread *cur = thread_current();
+  struct child_message *l;
+  for(e = list_begin(&cur->child_list); e != list_end(&cur->child_list); e = list_next(e)) {
+    l = list_entry(e, struct child_info, elem);
+    if (l -> tid == child_tid) {
+      if (!l->terminated) {
+        sema_down(l->sema_finished);
+      }
+      int return_value = l->exited ? l->return_value : -1;
+      list_remove(e);
+      list_remove(&l->allelem);
+      palloc_free_page(l);
+      return return_value;
+    }
+  }
   return -1;
 }
 
@@ -118,6 +175,8 @@ process_exit (void)
       cur->pagedir = NULL;
       pagedir_activate (NULL);
       pagedir_destroy (pd);
+
+      printf ("%s: exit(%d)\n",cur->name, cur->return_value);
     }
 }
 
@@ -209,7 +268,7 @@ static bool load_segment (struct file *file, off_t ofs, uint8_t *upage,
 /* Loads an ELF executable from FILE_NAME into the current thread.
    Stores the executable's entry point into *EIP
    and its initial stack pointer into *ESP.
-   Returns true if successful, false otherwise. */
+   Returns true if successful, false otherwise.63472192636*/
 bool
 load (const char *file_name, void (**eip) (void), void **esp) 
 {

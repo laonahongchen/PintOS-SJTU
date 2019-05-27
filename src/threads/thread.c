@@ -28,9 +28,16 @@ static struct list ready_list;
 /*List of processes in THREAD_BLOCK state. */
 static struct list block_list;
 
+/* List of file in this thread */
+static struct list file_list;
+
 /* List of all processes.  Processes are added to this list
    when they are first scheduled and removed when they exit. */
 static struct list all_list;
+
+
+/* List of all children. */
+static struct list child_list;
 
 /* Idle thread. */
 static struct thread *idle_thread;
@@ -110,14 +117,17 @@ thread_init (void)
   list_init (&ready_list);
   list_init (&block_list);
   list_init (&all_list);
+  list_init (&child_list)
 
   /* Set up a thread structure for the running thread. */
   initial_thread = running_thread ();
   init_thread (initial_thread, "main", PRI_DEFAULT);
   initial_thread->status = THREAD_RUNNING;
   initial_thread->tid = allocate_tid ();
+  initial_thread->return_value = 0;
 
   load_avg = 0;
+  
 }
 
 /* Starts preemptive thread scheduling by enabling interrupts.
@@ -168,6 +178,18 @@ thread_print_stats (void)
           idle_ticks, kernel_ticks, user_ticks);
 }
 
+static child_info
+get_child_info(tid_t tid) {
+  struct list_elem *e;
+  struct child_info *ret;
+  for(e = list_begin(&child_list); e != list_end(&child_list); e = list_next(e)) {
+    ret = list_entry(e, struct child_info, elem);
+    if(ret->child_id == tid)
+      return ret;
+  }
+  return NULL;
+}
+
 /* Creates a new kernel thread named NAME with the given initial
    PRIORITY, which executes FUNCTION passing AUX as the argument,
    and adds it to the ready queue.  Returns the thread identifier
@@ -204,6 +226,18 @@ thread_create (const char *name, int priority,
   /* Initialize thread. */
   init_thread (t, name, priority);
   tid = t->tid = allocate_tid ();
+
+  struct child_info *info = palloc_get_page(PAL_ZERO);
+  info->tid = tid;
+  info->child_id = t;
+  info->exited = false;
+  info->terminated = false;
+  info->load_failed = false;
+  info->sema_start = &(t->sema_start);
+  info->sema_finish = &(t->sema_finish);
+  info->ret_value = 0;
+  list_push_back(&child_list, &info->allelem);
+
 
   /* Stack frame for kernel_thread(). */
   kf = alloc_frame (t, sizeof *kf);
@@ -307,6 +341,35 @@ thread_exit (void)
 
 #ifdef USERPROG
   process_exit ();
+
+  /* notify all children that his parent has died. */
+  struct child_info *l;
+  struct thread* cur = thread_current();
+  while(!list_empty(&cur->child_list)) {
+    l = list_entry(list_pop_front(&cur->child_list), struct child_info, elem);
+    list_remove(&l->allelem);
+    l->child_thread->parent_die = true;
+    palloc_free_page(l);
+  }
+  if(!cur->parent_die)
+    cur->message_to_parent->terminated = true;
+  /* Close all the file current open and belong to this thread. */
+
+  sema_up(thread_current()->sema_finish);
+
+  if(!list_empty(&file_list); i != list_end(&file_list); i = list_next(i)) {
+    struct file_info *fd;
+    fd = list_entry(i, struct file_info, elem);
+    if(fd->thread_num == cur) {
+      close_file(fd->opened_file);
+      i = list_prev(i);
+      list_remove(&(fd->elem));
+      free(fd);
+    }
+  }
+  if(cur->exec_file != NULL) {
+    close_file(fd->opened_file);
+  }
 #endif
 
   /* Remove thread from all threads list, set our status to dying,
@@ -684,3 +747,26 @@ allocate_tid (void)
    Used by switch.S, which can't figure it out on its own. */
 uint32_t thread_stack_ofs = offsetof (struct thread, stack);
 
+
+/* Get the file_info of the given fd
+ * if the fd doesn't exist, return NULL. */
+
+struct file_info* get_file_info(int fd) {
+  struct thread *cur = thread_current();
+  struct list_elem *i;
+  for(i = list_begin(&file_list); i != list_end(&file_list); i = list_next(i)) {
+    struct file_info *l;
+    l = list_entry(i, struct file_info, elem);
+    if (l->fd == fd) {
+      if(l->thread_num == cur)
+        return l;
+      return NULL;
+    }
+  }
+  return NULL;
+}
+
+static void
+add_file_list(file_info info) {
+  list_push_back(&file_list, &(info->elem));
+}

@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.14)
-project(src C)
+project(src)
 
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
+include_directories(.)
 include_directories(devices)
+include_directories(examples)
 include_directories(filesys)
 include_directories(lib)
 include_directories(lib/kernel)
@@ -17,6 +19,9 @@ include_directories(tests/userprog)
 include_directories(tests/vm)
 include_directories(threads)
 include_directories(userprog)
+include_directories(utils)
+
+add_definitions(-DVM -DFILESYS -DUSERPROG ...)
 
 add_executable(src
         devices/block.c
@@ -55,6 +60,7 @@ add_executable(src
         examples/insult.c
         examples/lineup.c
         examples/ls.c
+        examples/Makefile
         examples/matmult.c
         examples/mcat.c
         examples/mcp.c

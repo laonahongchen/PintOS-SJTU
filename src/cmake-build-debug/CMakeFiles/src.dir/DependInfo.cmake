@@ -258,9 +258,18 @@ set(CMAKE_DEPENDS_CHECK_C
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 
+# Preprocessor definitions for this target.
+set(CMAKE_TARGET_DEFINITIONS_C
+  "FILESYS"
+  "USERPROG"
+  "VM"
+  )
+
 # The include file search paths:
 set(CMAKE_C_TARGET_INCLUDE_PATH
+  "../."
   "../devices"
+  "../examples"
   "../filesys"
   "../lib"
   "../lib/kernel"
@@ -274,6 +283,7 @@ set(CMAKE_C_TARGET_INCLUDE_PATH
   "../tests/vm"
   "../threads"
   "../userprog"
+  "../utils"
   )
 
 # Targets to which this target links.

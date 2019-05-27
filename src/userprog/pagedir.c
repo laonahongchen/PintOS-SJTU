@@ -2,6 +2,10 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
+#include <vaddr.h>
+#include <init.h>
+#include <palloc.h>
+#include <pte.h>
 #include "threads/init.h"
 #include "threads/pte.h"
 #include "threads/palloc.h"

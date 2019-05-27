@@ -34,7 +34,12 @@
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
+					<Add option="-DVM"/>
+					<Add option="-DFILESYS"/>
+					<Add option="-DUSERPROG"/>
+					<Add directory="/home/ubuntu/System2019/pintos/pos/src/."/>
 					<Add directory="/home/ubuntu/System2019/pintos/pos/src/devices"/>
+					<Add directory="/home/ubuntu/System2019/pintos/pos/src/examples"/>
 					<Add directory="/home/ubuntu/System2019/pintos/pos/src/filesys"/>
 					<Add directory="/home/ubuntu/System2019/pintos/pos/src/lib"/>
 					<Add directory="/home/ubuntu/System2019/pintos/pos/src/lib/kernel"/>
@@ -48,6 +53,10 @@
 					<Add directory="/home/ubuntu/System2019/pintos/pos/src/tests/vm"/>
 					<Add directory="/home/ubuntu/System2019/pintos/pos/src/threads"/>
 					<Add directory="/home/ubuntu/System2019/pintos/pos/src/userprog"/>
+					<Add directory="/home/ubuntu/System2019/pintos/pos/src/utils"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
@@ -68,7 +77,12 @@
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
+					<Add option="-DVM"/>
+					<Add option="-DFILESYS"/>
+					<Add option="-DUSERPROG"/>
+					<Add directory="/home/ubuntu/System2019/pintos/pos/src/."/>
 					<Add directory="/home/ubuntu/System2019/pintos/pos/src/devices"/>
+					<Add directory="/home/ubuntu/System2019/pintos/pos/src/examples"/>
 					<Add directory="/home/ubuntu/System2019/pintos/pos/src/filesys"/>
 					<Add directory="/home/ubuntu/System2019/pintos/pos/src/lib"/>
 					<Add directory="/home/ubuntu/System2019/pintos/pos/src/lib/kernel"/>
@@ -82,6 +96,10 @@
 					<Add directory="/home/ubuntu/System2019/pintos/pos/src/tests/vm"/>
 					<Add directory="/home/ubuntu/System2019/pintos/pos/src/threads"/>
 					<Add directory="/home/ubuntu/System2019/pintos/pos/src/userprog"/>
+					<Add directory="/home/ubuntu/System2019/pintos/pos/src/utils"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
@@ -182,6 +200,9 @@
 			<Option target="src"/>
 		</Unit>
 		<Unit filename="/home/ubuntu/System2019/pintos/pos/src/devices/vga.h">
+			<Option target="src"/>
+		</Unit>
+		<Unit filename="/home/ubuntu/System2019/pintos/pos/src/examples/Makefile">
 			<Option target="src"/>
 		</Unit>
 		<Unit filename="/home/ubuntu/System2019/pintos/pos/src/examples/bubsort.c">
