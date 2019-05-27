@@ -90,8 +90,11 @@ void
 timer_sleep (int64_t ticks) 
 {
   if (ticks <= 0) return;
+
   ASSERT (intr_get_level () == INTR_ON);
-  thread_sleep(ticks);
+  enum intr_level old_level = intr_disable ();
+  thread_sleep (ticks);
+  intr_set_level (old_level);
 
 }
 
@@ -170,19 +173,18 @@ static void
 timer_interrupt (struct intr_frame *args UNUSED)
 {
   ticks++;
-  thread_tick();
-  block_thread_check();
+  thread_tick ();
   if (thread_mlfqs)
   {
-    increase_recent_cpu(thread_current());
+    increase_recent_cpu ();
     if (ticks % TIMER_FREQ == 0)
     {
-      update_load_avg();
-      update_recent_cpu();
+      update_load_avg ();
+      update_recent_cpu_for_each ();
     }
     if (ticks % 4 == 0)
     {
-      update_priority_for_each();
+      update_priority_for_each ();
     }
   }
 }
