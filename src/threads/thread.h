@@ -15,19 +15,26 @@ enum thread_status
     THREAD_DYING        /* About to be destroyed. */
   };
 
+
+
+/* Thread identifier type.
+   You can redefine this to whatever type you like. */
+typedef int tid_t;
+#define TID_ERROR ((tid_t) -1)          /* Error value for tid_t. */
+
 struct child_info
-  {
-    struct thread *child_thread;
-    tid_t child_id;
-    bool exited;
-    bool terminated;
-    bool load_failed;
-    int ret_value;
-    struct semaphore sema_start;
-    struct semaphore sema_finish;
-    struct list_elem elem;
-    struct list_elem allelem;
-  };
+{
+  struct thread *child_thread;
+  tid_t child_id;
+  bool exited;
+  bool terminated;
+  bool load_failed;
+  int ret_value;
+  struct semaphore *sema_start;
+  struct semaphore *sema_finish;
+  struct list_elem elem;
+  struct list_elem allelem;
+};
 struct file_info{
   int fd;
   struct file* opened_file;
@@ -35,11 +42,6 @@ struct file_info{
 
   struct list_elem elem;
 };
-
-/* Thread identifier type.
-   You can redefine this to whatever type you like. */
-typedef int tid_t;
-#define TID_ERROR ((tid_t) -1)          /* Error value for tid_t. */
 
 /* Thread priorities. */
 #define PRI_MIN 0                       /* Lowest priority. */

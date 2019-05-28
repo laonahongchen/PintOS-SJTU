@@ -117,7 +117,7 @@ thread_init (void)
   list_init (&ready_list);
   list_init (&block_list);
   list_init (&all_list);
-  list_init (&child_list)
+  list_init (&child_list);
 
   /* Set up a thread structure for the running thread. */
   initial_thread = running_thread ();
@@ -178,7 +178,7 @@ thread_print_stats (void)
           idle_ticks, kernel_ticks, user_ticks);
 }
 
-static child_info
+static struct child_info*
 get_child_info(tid_t tid) {
   struct list_elem *e;
   struct child_info *ret;
@@ -228,8 +228,8 @@ thread_create (const char *name, int priority,
   tid = t->tid = allocate_tid ();
 
   struct child_info *info = palloc_get_page(PAL_ZERO);
-  info->tid = tid;
-  info->child_id = t;
+  info->child_id = tid;
+  info->child_thread = t;
   info->exited = false;
   info->terminated = false;
   info->load_failed = false;
@@ -335,40 +335,42 @@ thread_tid (void)
 /* Deschedules the current thread and destroys it.  Never
    returns to the caller. */
 void
-thread_exit (void) 
-{
-  ASSERT (!intr_context ());
+thread_exit (void) {
+  ASSERT (!intr_context());
 
 #ifdef USERPROG
-  process_exit ();
+  process_exit();
 
   /* notify all children that his parent has died. */
   struct child_info *l;
-  struct thread* cur = thread_current();
-  while(!list_empty(&cur->child_list)) {
+  struct thread *cur = thread_current();
+  while (!list_empty(&cur->child_list)) {
     l = list_entry(list_pop_front(&cur->child_list), struct child_info, elem);
     list_remove(&l->allelem);
     l->child_thread->parent_die = true;
     palloc_free_page(l);
   }
-  if(!cur->parent_die)
+  if (!cur->parent_die)
     cur->message_to_parent->terminated = true;
   /* Close all the file current open and belong to this thread. */
 
-  sema_up(thread_current()->sema_finish);
+  sema_up(&thread_current()->sema_finish);
 
-  if(!list_empty(&file_list); i != list_end(&file_list); i = list_next(i)) {
-    struct file_info *fd;
-    fd = list_entry(i, struct file_info, elem);
-    if(fd->thread_num == cur) {
-      close_file(fd->opened_file);
-      i = list_prev(i);
-      list_remove(&(fd->elem));
-      free(fd);
+  if (!list_empty(&file_list)) {
+    struct list_elem *i;
+    for (i = list_begin(&file_list); i != list_end(&file_list); i = list_next(i)) {
+      struct file_info *fd;
+      fd = list_entry(i, struct file_info, elem);
+      if (fd->thread_num == cur) {
+        close_file(fd->opened_file);
+        i = list_prev(i);
+        list_remove(&(fd->elem));
+        free(fd);
+      }
     }
   }
   if(cur->exec_file != NULL) {
-    close_file(fd->opened_file);
+    close_file(cur->exec_file);
   }
 #endif
 
@@ -767,6 +769,6 @@ struct file_info* get_file_info(int fd) {
 }
 
 static void
-add_file_list(file_info info) {
+add_file_list(struct file_info *info) {
   list_push_back(&file_list, &(info->elem));
 }
