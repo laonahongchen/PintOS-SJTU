@@ -1,7 +1,7 @@
 #ifndef THREADS_FIXED_POINT_H
 #define THREADS_FIXED_POINT_H
 
-typedef int fixed_t;
+typedef int64_t fixed_t;
 
 #define FP_SHIFT_AMOUNT 16
 
