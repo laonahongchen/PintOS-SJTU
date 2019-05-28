@@ -4,7 +4,6 @@
 #include <debug.h>
 #include <list.h>
 #include <stdint.h>
-#include "synch.h"
 
 /* States in a thread's life cycle. */
 enum thread_status
@@ -15,41 +14,18 @@ enum thread_status
     THREAD_DYING        /* About to be destroyed. */
   };
 
-
-
 /* Thread identifier type.
    You can redefine this to whatever type you like. */
 typedef int tid_t;
 #define TID_ERROR ((tid_t) -1)          /* Error value for tid_t. */
 
-struct child_info
-{
-  struct thread *child_thread;
-  tid_t child_id;
-  bool exited;
-  bool terminated;
-  bool load_failed;
-  int ret_value;
-  struct semaphore *sema_start;
-  struct semaphore *sema_finish;
-  struct list_elem elem;
-  struct list_elem allelem;
-};
-struct file_info{
-  int fd;
-  struct file* opened_file;
-  struct thread* thread_num;
-
-  struct list_elem elem;
-};
-
 /* Thread priorities. */
 #define PRI_MIN 0                       /* Lowest priority. */
 #define PRI_DEFAULT 31                  /* Default priority. */
 #define PRI_MAX 63                      /* Highest priority. */
-#define NICE_MIN -20
-#define NICE_DEFAULT 0
-#define NICE_MAX 20
+#define NICE_MIN -20                    /* Lowest nice. */
+#define NICE_DEFAULT 0                  /* Default nice. */
+#define NICE_MAX 20                     /* Highest nice. */
 
 /* A kernel thread or user process.
 
@@ -115,30 +91,23 @@ struct thread
     char name[16];                      /* Name (for debugging purposes). */
     uint8_t *stack;                     /* Saved stack pointer. */
     int priority;                       /* Priority. */
-    int old_priority;			/* Old priority */
-
-    int recent_cpu;
-    int nice;
-
     struct list_elem allelem;           /* List element for all threads list. */
 
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
 
-    int64_t wakeup_time;
+    /* My attempt and owned by thread.c. */
+    int64_t wakeup_time;                /* Time to wake up after sleep. */
+    int recent_cpu;                     /* Recent_CPU for priority. */
+    int nice;                           /* Nice for priority. */
 
-    int return_value;
-    struct list child_list;
-    struct semaphore sema_start;
-    struct semaphore sema_finish;
-    bool parent_die;
-    struct child_info *message_to_parent;
-
+    int old_priority;                   /* Old priority. */
+    struct list locks;                  /* Locks tat the thread is holding. */
+    struct lock *lock_waiting;          /* The lock that the thread is waiting for. */
+   
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
-
-    struct file* exec_file;
 #endif
 
     /* Owned by thread.c. */
@@ -154,6 +123,8 @@ void thread_init (void);
 void thread_start (void);
 
 void thread_tick (void);
+void thread_sleep (int64_t ticks);
+void thread_wakeup (void);
 void thread_print_stats (void);
 
 typedef void thread_func (void *aux);
@@ -169,9 +140,6 @@ const char *thread_name (void);
 void thread_exit (void) NO_RETURN;
 void thread_yield (void);
 
-void thread_sleep(int64_t ticks);
-void block_thread_check(void);
-
 /* Performs some operation on thread t, given auxiliary data AUX. */
 typedef void thread_action_func (struct thread *t, void *aux);
 void thread_foreach (thread_action_func *, void *);
@@ -184,11 +152,17 @@ void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 
-void increase_recent_cpu (struct thread *t);
+void increase_recent_cpu (void);
 void update_priority (struct thread *t, void *aux UNUSED);
 void update_priority_for_each (void);
 
 void update_load_avg (void);
-void update_recent_cpu (void);
+void update_recent_cpu (struct thread *t, void *aux UNUSED);
+void update_recent_cpu_for_each (void);
+
+void thread_hold_the_lock (struct lock *lock);
+void thread_donate_priority (struct thread *t);
+void thread_remove_lock (struct lock *lock);
+void thread_update_priority (struct thread *t);
 
 #endif /* threads/thread.h */
