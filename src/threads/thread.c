@@ -8,12 +8,14 @@
 #include "threads/interrupt.h"
 #include "threads/intr-stubs.h"
 #include "threads/palloc.h"
+#include "threads/malloc.h"
 #include "threads/switch.h"
 #include "threads/synch.h"
 #include "threads/vaddr.h"
 #include "threads/fixed_point.h"
 #ifdef USERPROG
 #include "userprog/process.h"
+#include "userprog/syscall.h"
 #endif
 
 /* Random value for struct thread's `magic' member.
@@ -28,9 +30,17 @@ static struct list ready_list;
 /* List of processes in THREAD_BLOCK state. */
 static struct list sleep_list;
 
+
+/* List of file in this thread */
+static struct list file_list;
+
 /* List of all processes.  Processes are added to this list
    when they are first scheduled and removed when they exit. */
 static struct list all_list;
+
+/* List of all children. */
+static struct list child_list;
+
 
 /* Idle thread. */
 static struct thread *idle_thread;
@@ -201,6 +211,17 @@ thread_print_stats (void)
           idle_ticks, kernel_ticks, user_ticks);
 }
 
+struct child_info* get_child_info(tid_t tid) {
+  struct list_elem *e;
+  struct child_info *ret;
+  for(e = list_begin(&child_list); e != list_end(&child_list); e = list_next(e)) {
+    ret = list_entry(e, struct child_info, elem);
+    if(ret->child_id == tid)
+      return ret;
+  }
+  return NULL;
+}
+
 /* Creates a new kernel thread named NAME with the given initial
    PRIORITY, which executes FUNCTION passing AUX as the argument,
    and adds it to the ready queue.  Returns the thread identifier
@@ -236,6 +257,17 @@ thread_create (const char *name, int priority,
   /* Initialize thread. */
   init_thread (t, name, priority);
   tid = t->tid = allocate_tid ();
+
+  struct child_info *info = palloc_get_page(PAL_ZERO);
+  info->child_id = tid;
+  info->child_thread = t;
+  info->exited = false;
+  info->terminated = false;
+  info->load_failed = false;
+  info->sema_start = &(t->sema_start);
+  info->sema_finish = &(t->sema_finish);
+  info->ret_value = 0;
+  list_push_back(&child_list, &info->allelem);
 
   /* Stack frame for kernel_thread(). */
   kf = alloc_frame (t, sizeof *kf);
@@ -349,7 +381,39 @@ thread_exit (void)
   ASSERT (!intr_context ());
 
 #ifdef USERPROG
-  process_exit ();
+  process_exit();
+
+  /* notify all children that his parent has died. */
+  struct child_info *l;
+  struct thread *cur = thread_current();
+  while (!list_empty(&cur->child_list)) {
+    l = list_entry(list_pop_front(&cur->child_list), struct child_info, elem);
+    list_remove(&l->allelem);
+    l->child_thread->parent_die = true;
+    palloc_free_page(l);
+  }
+  if (!cur->parent_die)
+    cur->message_to_parent->terminated = true;
+  /* Close all the file current open and belong to this thread. */
+
+  sema_up(&thread_current()->sema_finish);
+
+  if (!list_empty(&file_list)) {
+    struct list_elem *i;
+    for (i = list_begin(&file_list); i != list_end(&file_list); i = list_next(i)) {
+      struct file_info *fd;
+      fd = list_entry(i, struct file_info, elem);
+      if (fd->thread_num == cur) {
+        close_file(fd->opened_file);
+        i = list_prev(i);
+        list_remove(&(fd->elem));
+        free(fd);
+      }
+    }
+  }
+  if(cur->exec_file != NULL) {
+    close_file(cur->exec_file);
+  }
 #endif
 
   /* Remove thread from all threads list, set our status to dying,
@@ -833,6 +897,27 @@ lock_priority_more (const struct list_elem *lhs, const struct list_elem *rhs, vo
   
   return (a->max_priority > b->max_priority);
 }
+
+struct file_info* get_file_info(int fd) {
+  struct thread *cur = thread_current();
+  struct list_elem *i;
+  for (i = list_begin(&file_list); i != list_end(&file_list); i = list_next(i)) {
+    struct file_info *l;
+    l = list_entry(i, struct file_info, elem);
+    if (l->fd == fd) {
+      if (l->thread_num == cur)
+        return l;
+      return NULL;
+    }
+  }
+  return NULL;
+}
+
+void
+add_file_list(struct file_info *info) {
+  list_push_back(&file_list, &(info->elem));
+}
+
 
 
 /* Offset of `stack' member within `struct thread'.

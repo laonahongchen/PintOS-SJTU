@@ -5,13 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <interrupt.h>
-#include <thread.h>
-#include <palloc.h>
-#include <flags.h>
-#include <vaddr.h>
-#include <file.h>
-#include <filesys.h>
 #include "userprog/gdt.h"
 #include "userprog/pagedir.h"
 #include "userprog/tss.h"
@@ -136,14 +129,14 @@ process_wait (tid_t child_tid UNUSED)
     return -1;
   struct list_elem *e;
   struct thread *cur = thread_current();
-  struct child_message *l;
+  struct child_info *l;
   for(e = list_begin(&cur->child_list); e != list_end(&cur->child_list); e = list_next(e)) {
     l = list_entry(e, struct child_info, elem);
-    if (l -> tid == child_tid) {
+    if (l -> child_id == child_tid) {
       if (!l->terminated) {
-        sema_down(l->sema_finished);
+        sema_down(l->sema_finish);
       }
-      int return_value = l->exited ? l->return_value : -1;
+      int return_value = l->exited ? l->ret_value : -1;
       list_remove(e);
       list_remove(&l->allelem);
       palloc_free_page(l);

@@ -3,26 +3,36 @@
 #include <syscall-nr.h>
 #include <threads/vaddr.h>
 #include "threads/interrupt.h"
+#include "threads/malloc.h"
 #include "threads/thread.h"
 #include "devices/shutdown.h"
+#include "devices/input.h"
 #include "process.h"
+#include "filesys/file.h"
+#include "filesys/filesys.h"
+
+typedef int pid_t;
+
+
 
 static void syscall_handler (struct intr_frame *);
 
-static void close_file(struct file* file);
 static void sys_halt(struct intr_frame *f);
 static void sys_exit(struct intr_frame *f, int status);
 static void sys_exec(struct intr_frame *f, const char *cmd_line);
 static void sys_wait(struct intr_frame *f, pid_t pid);
-static void sys_create(struct intr_frame *f, const char *file);
+static void sys_create(struct intr_frame *f, const char *name, unsigned initial_size);
 static void sys_remove(struct intr_frame *f, const char *file);
 static void sys_open(struct intr_frame *f, const char *file);
 static void sys_filesize(struct intr_frame *f, int fd);
-static void sys_read(struct intr_frame *f, int fd, void *buffer, unsigned size);
+static void sys_read(struct intr_frame *f, int fd, const void *buffer, unsigned size);
 static void sys_write(struct intr_frame *f, int fd, const void *buffer, unsigned size);
 static void sys_seek(struct intr_frame *f, int fd, unsigned position);
 static void sys_tell(struct intr_frame *f, int fd);
 static void sys_close(struct intr_frame *f, int fd);
+bool check_translate_user(const char *vaddr, bool write);
+
+void exit_status(struct intr_frame *f, int status);
 
 bool syscall_check_user_string(const char *str);
 bool syscall_check_user_buffer(const char *str, int size, bool write);
@@ -32,7 +42,7 @@ static struct lock filesys_lock;
 void
 syscall_init (void) 
 {
-  lock_init(*filesys_lock);
+  lock_init(&filesys_lock);
   intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
 }
 
@@ -57,7 +67,7 @@ check_user(const char *vaddr, int size, bool write) {
     return false;
   size >>= 12; // to page num so that we only need to check is every page valid
   do {
-    if(!check_translate_user(vaddr, size, write))
+    if(!check_translate_user(vaddr, write))
       return false;
     vaddr += (1<<12);
   } while(size--);
@@ -75,7 +85,7 @@ syscall_handler (struct intr_frame *f /*UNUSED*/)
   void *arg1 = f->esp + 4, *arg2 = f->esp + 8, *arg3 = f->esp + 12;
 
   switch (syscall_num) {
-    case SYS_EXIT: case SYS_EXEC: case SYS_WAIT: case SYS_TELL: case SYS_CLOSE: case SYS_REMOVE: case SYS_OPEN: case SYS_FILESIZE:
+    case SYS_EXIT: case SYS_EXEC: case SYS_WAIT: case SYS_TELL:  case SYS_REMOVE: case SYS_FILESIZE: case SYS_OPEN: case SYS_CLOSE:
       if(!check_user(arg1, 4, false))
         exit_status(f, -1);
       break;
@@ -83,7 +93,7 @@ syscall_handler (struct intr_frame *f /*UNUSED*/)
       if(!check_user(arg1, 8, false))
         exit_status(f, -1);
       break;
-    case SYS_OPEN: case SYS_CLOSE:
+    case SYS_READ: case SYS_WRITE:
       if(!check_user(arg1, 12, false))
         exit_status(f, -1);
       break;
@@ -107,11 +117,11 @@ syscall_handler (struct intr_frame *f /*UNUSED*/)
     case SYS_FILESIZE:
       sys_filesize(f, *((int *)arg1)); break;
     case SYS_READ:
-      sys_read(f, *((int *)arg1, *((void **) arg2), *((unsigned *) arg3)); break;
+      sys_read(f, *((int *)arg1), *((void **) arg2), *((unsigned *) arg3)); break;
     case SYS_WRITE:
-      sys_write(f, *((int *)arg1, *((void **) arg2), *((unsigned *) arg3)); break;
+      sys_write(f, *((int *)arg1), *((void **) arg2), *((unsigned *) arg3)); break;
     case SYS_SEEK:
-      sys_seek(f, *((int *)arg1, *((unsigned *) arg2)); break;
+      sys_seek(f, *((int *)arg1), *((unsigned *) arg2)); break;
     case SYS_TELL:
       sys_tell(f, *((int *)arg1)); break;
     case SYS_CLOSE:
@@ -138,7 +148,7 @@ sys_exit(struct intr_frame *f, int status) {
     cur->message_to_parent->exited = true;
     cur->message_to_parent->ret_value = status;
   }
-  return status;
+  exit_status(f, status);
 }
 
 static void
@@ -151,7 +161,7 @@ sys_write(struct intr_frame *f, int fd, const void *buffer, unsigned size) {
     putbuf(buffer, size);
   } else {
     struct file_info *info = get_file_info(fd);
-    if(info != NULL && !inode_isdir(file_get_inode(info->opened_file))) {
+    if(info != NULL) {
       lock_acquire(&filesys_lock);
       f->eax = file_write(info->opened_file, buffer, size);
       lock_release(&filesys_lock);
@@ -162,21 +172,21 @@ sys_write(struct intr_frame *f, int fd, const void *buffer, unsigned size) {
 }
 
 static void
-sys_read(struct intr_frame *f, int fd, const void *buffer, int size) {
+sys_read(struct intr_frame *f, int fd, const void *buffer, unsigned size) {
   if(!check_user(buffer, size, true))
     exit_status(f, -1);
   if(fd == STDOUT_FILENO)
     exit_status(f, -1);
-  uint8_t str = buffer;
+  uint8_t *str = buffer;
   if(fd == STDIN_FILENO) {
     while(size--) {
       *(char *)str++ = input_getc();
     }
   } else {
     struct file_info *info = get_file_info(fd);
-    if(t != NULL) {
+    if(info != NULL) {
       lock_acquire(&filesys_lock);
-      f->eax = (uint32_t)file_read(info->opened_file, buffer, size);
+      f->eax = (uint32_t)file_read(info->opened_file, (void *)buffer, size);
       lock_release(&filesys_lock);
     } else {
       exit_status(f, -1);
@@ -184,10 +194,9 @@ sys_read(struct intr_frame *f, int fd, const void *buffer, int size) {
   }
 }
 
-static void
-close_file(struct file* file) {
+void close_file(struct file *file1) {
   lock_acquire(&filesys_lock);
-  file_close(file);
+  file_close(file1);
   lock_release(&filesys_lock);
 }
 
@@ -200,7 +209,7 @@ check_string(const char *str) {
     if(cnt == 4095)
       return false;
     cnt++;
-    if(((int)(str + cnt)) & PGMASK == 0) {
+    if(((int)(str + cnt) & PGMASK) == 0) {
       if (!check_translate_user(str + cnt, false))
         return false;
     }
@@ -218,7 +227,7 @@ sys_exec(struct intr_frame *f, const char *cmd_line) {
   lock_release(&filesys_lock);
   struct list_elem *e;
   struct thread *cur = thread_current();
-  struct child_message *l;
+  struct child_info *l;
   for(e = list_begin(&cur->child_list); e != list_end(&cur->child_list); e = list_next(e)) {
     l = list_entry(e, struct child_info, elem);
     if(l->child_id == f->eax) {
@@ -235,7 +244,7 @@ sys_open(struct intr_frame *f, const char *name) {
   if(!check_string(name))
     exit_status(f, -1);
   lock_acquire(&filesys_lock);
-  file *tmp = (uint32_t)filesys_open(name);
+  struct file *tmp = filesys_open(name);
   lock_release(&filesys_lock);
   if(tmp == NULL) {
     f->eax = (uint32_t)-1;
@@ -271,7 +280,7 @@ sys_remove(struct intr_frame *f, const char *name) {
 static void
 sys_filesize(struct intr_frame *f, int fd) {
   struct file_info *info = get_file_info(fd);
-  if(t != NULL) {
+  if(info != NULL) {
     lock_acquire(&filesys_lock);
     f->eax = (uint32_t)file_length(info->opened_file);
     lock_release(&filesys_lock);
@@ -283,7 +292,7 @@ sys_filesize(struct intr_frame *f, int fd) {
 static void
 sys_close(struct intr_frame *f, int fd) {
   struct file_info *info = get_file_info(fd);
-  if(t != NULL) {
+  if(info != NULL) {
     lock_acquire(&filesys_lock);
     file_close(info->opened_file);
     lock_release(&filesys_lock);

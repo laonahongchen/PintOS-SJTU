@@ -4,6 +4,7 @@
 #include <debug.h>
 #include <list.h>
 #include <stdint.h>
+#include "threads/synch.h"
 
 /* States in a thread's life cycle. */
 enum thread_status
@@ -26,6 +27,30 @@ typedef int tid_t;
 #define NICE_MIN -20                    /* Lowest nice. */
 #define NICE_DEFAULT 0                  /* Default nice. */
 #define NICE_MAX 20                     /* Highest nice. */
+
+struct thread;
+
+struct child_info
+{
+  struct thread *child_thread;
+  tid_t child_id;
+  bool exited;
+  bool terminated;
+  bool load_failed;
+  int ret_value;
+  struct semaphore *sema_start;
+  struct semaphore *sema_finish;
+  struct list_elem elem;
+  struct list_elem allelem;
+};
+struct file_info{
+  int fd;
+  struct file* opened_file;
+  struct thread* thread_num;
+
+  struct list_elem elem;
+};
+
 
 /* A kernel thread or user process.
 
@@ -104,10 +129,17 @@ struct thread
     int old_priority;                   /* Old priority. */
     struct list locks;                  /* Locks tat the thread is holding. */
     struct lock *lock_waiting;          /* The lock that the thread is waiting for. */
-   
+
+    int return_value;
+    struct list child_list;
+    struct semaphore sema_start;
+    struct semaphore sema_finish;
+    bool parent_die;
+    struct child_info *message_to_parent;
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
+  struct file* exec_file;
 #endif
 
     /* Owned by thread.c. */
@@ -164,5 +196,9 @@ void thread_hold_the_lock (struct lock *lock);
 void thread_donate_priority (struct thread *t);
 void thread_remove_lock (struct lock *lock);
 void thread_update_priority (struct thread *t);
+
+struct file_info* get_file_info(int fd);
+struct child_info* get_child_info(tid_t tid);
+void add_file_list(struct file_info *info);
 
 #endif /* threads/thread.h */
