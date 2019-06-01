@@ -78,9 +78,14 @@ start_process (void *file_name_)
   success = load (token, &if_.eip, &if_.esp);
 
   /* If load failed, quit. */
-  palloc_free_page (file_name);
-  if (!success) 
-    thread_exit ();
+  //palloc_free_page (file_name);
+  if (!success) {
+    palloc_free_page(file_name);
+    thread_current() -> message_to_parent -> load_failed = true;
+    thread_current() -> message_to_parent -> ret_value = -1;
+    thread_current() -> return_value = -1;
+    thread_exit();
+  }
 
   /* Start the user process by simulating a return from an
      interrupt, implemented by intr_exit (in
@@ -91,12 +96,15 @@ start_process (void *file_name_)
   char *esp = (char *)if_.esp;
   char *args[256];
   int i, n = 0;
-  for(; token != NULL; token = strtok_r(NULL, "", &save_ptr)) {
+  for(; token != NULL; token = strtok_r(NULL, " ", &save_ptr)) {
+//    printf("%s\n", token);
     esp -= strlen(token) + 1;
     strlcpy(esp, token, strlen(token) + 1);
     args[n++] = esp;
   }
-  esp -= (int)esp % 4;
+//  esp -= (int)esp % 4;
+  while((int)esp % 4)
+    esp--;
   int *p = esp - 4;
   *p-- = 0;
   for(int i = n - 1; i >= 0; --i) {
@@ -123,7 +131,7 @@ start_process (void *file_name_)
    This function will be implemented in problem 2-2.  For now, it
    does nothing. */
 int
-process_wait (tid_t child_tid UNUSED) 
+process_wait (tid_t child_tid)
 {
   if (child_tid == -1)
     return -1;
@@ -153,6 +161,14 @@ process_exit (void)
   struct thread *cur = thread_current ();
   uint32_t *pd;
 
+  struct child_info *l;
+  while (!list_empty(&cur->child_list)) {
+    l = list_entry(list_pop_front(&cur->child_list), struct child_info, elem);
+    list_remove(&l->allelem);
+    l->child_thread->parent_die = true;
+    palloc_free_page(l);
+  }
+
   /* Destroy the current process's page directory and switch back
      to the kernel-only page directory. */
   pd = cur->pagedir;
@@ -171,6 +187,10 @@ process_exit (void)
 
       printf ("%s: exit(%d)\n",cur->name, cur->return_value);
     }
+  if (!cur->parent_die) {
+    printf("not die");
+    cur->message_to_parent->terminated = true;
+  }
 }
 
 /* Sets up the CPU for running user code in the current

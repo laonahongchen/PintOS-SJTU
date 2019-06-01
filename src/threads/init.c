@@ -130,11 +130,15 @@ pintos_init (void)
 #endif
 
   printf ("Boot complete.\n");
-  
+//  if(argv == NULL) {
+//    printf("test\n");
+//  }
   if (*argv != NULL) {
     /* Run actions specified on kernel command line. */
+//    printf("has argv\n");
     run_actions (argv);
   } else {
+//    printf("bug!!!!!!!!!!!!!!!!!!!!!!");
     // TODO: no command line passed to kernel. Run interactively 
     //readline();
   }

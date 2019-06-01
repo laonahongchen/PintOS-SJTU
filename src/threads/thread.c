@@ -112,7 +112,9 @@ thread_init (void)
   lock_init (&tid_lock);
   list_init (&ready_list);
   list_init (&sleep_list);
+  list_init (&file_list);
   list_init (&all_list);
+  list_init (&child_list);
 
   /* Set up a thread structure for the running thread. */
   initial_thread = running_thread ();
@@ -214,8 +216,8 @@ thread_print_stats (void)
 struct child_info* get_child_info(tid_t tid) {
   struct list_elem *e;
   struct child_info *ret;
-  for(e = list_begin(&child_list); e != list_end(&child_list); e = list_next(e)) {
-    ret = list_entry(e, struct child_info, elem);
+  for(e = list_rbegin(&child_list); e != list_rend(&child_list); e = list_prev(e)) {
+    ret = list_entry(e, struct child_info, allelem);
     if(ret->child_id == tid)
       return ret;
   }
@@ -268,6 +270,7 @@ thread_create (const char *name, int priority,
   info->sema_finish = &(t->sema_finish);
   info->ret_value = 0;
   list_push_back(&child_list, &info->allelem);
+  t->message_to_parent = info;
 
   /* Stack frame for kernel_thread(). */
   kf = alloc_frame (t, sizeof *kf);
@@ -295,12 +298,14 @@ thread_create (const char *name, int priority,
     update_priority (thread_current(), NULL);
   }
 
-  if(t->priority > thread_current ()->priority){
+  /*if(t->priority > thread_current ()->priority){
     thread_yield ();
-  }
+  }*/
+  thread_cond_yield ();
 
   return tid;
 }
+
 
 /* Puts the current thread to sleep.  It will not be scheduled
    again until awoken by thread_unblock().
@@ -383,29 +388,21 @@ thread_exit (void)
 #ifdef USERPROG
   process_exit();
 
-  /* notify all children that his parent has died. */
-  struct child_info *l;
-  struct thread *cur = thread_current();
-  while (!list_empty(&cur->child_list)) {
-    l = list_entry(list_pop_front(&cur->child_list), struct child_info, elem);
-    list_remove(&l->allelem);
-    l->child_thread->parent_die = true;
-    palloc_free_page(l);
-  }
-  if (!cur->parent_die)
-    cur->message_to_parent->terminated = true;
-  /* Close all the file current open and belong to this thread. */
-
   sema_up(&thread_current()->sema_finish);
 
+  struct thread *cur = thread_current();
+  /* Close all the file current open and belong to this thread. */
+
+
+
   if (!list_empty(&file_list)) {
-    struct list_elem *i;
-    for (i = list_begin(&file_list); i != list_end(&file_list); i = list_next(i)) {
+    struct list_elem *e;
+    for (e = list_begin(&file_list); e != list_end(&file_list); e = list_next(e)) {
       struct file_info *fd;
-      fd = list_entry(i, struct file_info, elem);
+      fd = list_entry(e, struct file_info, elem);
       if (fd->thread_num == cur) {
         close_file(fd->opened_file);
-        i = list_prev(i);
+        e = list_prev(e);
         list_remove(&(fd->elem));
         free(fd);
       }
@@ -442,6 +439,16 @@ thread_yield (void)
   cur->status = THREAD_READY;
   schedule ();
   intr_set_level (old_level);
+}
+void
+thread_cond_yield (void)
+{
+  if (thread_current () != idle_thread &&
+      !list_empty (&ready_list) &&
+      thread_current ()->priority < list_entry (list_begin (&ready_list), struct thread, elem)->priority)
+
+    thread_yield ();
+
 }
 
 /* Invoke function 'func' on all threads, passing along 'aux'.
@@ -517,8 +524,9 @@ thread_set_nice (int nice UNUSED)
     list_sort (&ready_list, thread_priority_more, NULL);
   else if (t->status == THREAD_RUNNING)
   {
-    int max_priority = list_entry (list_begin (&ready_list), struct thread, elem)->priority;
-    if (max_priority > t->priority) thread_yield();
+    /*int max_priority = list_entry (list_begin (&ready_list), struct thread, elem)->priority;
+    if (max_priority > t->priority) thread_yield ();*/
+    thread_cond_yield ();
   }
 }
 
@@ -743,6 +751,12 @@ init_thread (struct thread *t, const char *name, int priority)
   t->old_priority = priority;
   list_init (&t->locks);
   t->lock_waiting = NULL;
+
+  t->return_value = 0;
+  t->parent_die = false;
+  list_init(&t->child_list);
+  sema_init(&t->sema_start, 0);
+  sema_init(&t->sema_finish, 0);
 
   old_level = intr_disable ();
   list_insert_ordered (&all_list, &t->allelem, thread_priority_more, NULL);

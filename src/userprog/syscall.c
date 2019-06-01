@@ -30,12 +30,6 @@ static void sys_write(struct intr_frame *f, int fd, const void *buffer, unsigned
 static void sys_seek(struct intr_frame *f, int fd, unsigned position);
 static void sys_tell(struct intr_frame *f, int fd);
 static void sys_close(struct intr_frame *f, int fd);
-bool check_translate_user(const char *vaddr, bool write);
-
-void exit_status(struct intr_frame *f, int status);
-
-bool syscall_check_user_string(const char *str);
-bool syscall_check_user_buffer(const char *str, int size, bool write);
 
 static struct lock filesys_lock;
 
