@@ -84,6 +84,7 @@ start_process (void *file_name_)
     thread_current() -> message_to_parent -> load_failed = true;
     thread_current() -> message_to_parent -> ret_value = -1;
     thread_current() -> return_value = -1;
+    sema_up(thread_current()->message_to_parent->sema_start);
     thread_exit();
   }
 
@@ -188,7 +189,7 @@ process_exit (void)
       printf ("%s: exit(%d)\n",cur->name, cur->return_value);
     }
   if (!cur->parent_die) {
-    printf("not die");
+    //printf("not die");
     cur->message_to_parent->terminated = true;
   }
 }
