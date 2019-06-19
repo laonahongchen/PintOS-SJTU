@@ -601,14 +601,7 @@ increase_recent_cpu (void)
 void
 thread_hold_the_lock (struct lock *lock)
 {
-  enum intr_level old_level = intr_disable ();
   list_insert_ordered (&thread_current ()->locks, &lock->elem, lock_priority_more, NULL);
-  if (lock->max_priority > thread_current ()->priority)
-  {
-    thread_current ()->priority = lock->max_priority;
-    thread_yield ();
-  }
-  intr_set_level (old_level);
 }
 
 /* Let the current thread donate its priority to thread t. */
@@ -616,12 +609,17 @@ void
 thread_donate_priority (struct thread *t)
 {
   enum intr_level old_level = intr_disable();
-  thread_update_priority (t);
+  t->priority = thread_current ()->priority;
   if (t->status == THREAD_READY)
   {
     list_remove (&t->elem);
     list_insert_ordered (&ready_list, &t->elem, thread_priority_more, NULL);
+  } 
+  else if (t->status == THREAD_RUNNING)
+  {
+    thread_cond_yield ();
   }
+
   intr_set_level (old_level);
 }
 
@@ -631,24 +629,17 @@ thread_remove_lock (struct lock *lock)
 {
   enum intr_level old_level = intr_disable ();
   list_remove (&lock->elem);
-  thread_update_priority (thread_current ());
-  intr_set_level (old_level);
-}
-
-/* Update the priority of thread t. */
-void
-thread_update_priority (struct thread *t)
-{
-  enum intr_level old_level = intr_disable();
-  int max_priority = t->old_priority;
-  if (!list_empty (&t->locks))
+  struct thread *cur = thread_current ();
+  if (list_empty (&cur->locks))
   {
-    list_sort (&t->locks, lock_priority_more, NULL);
-    int lock_priority = list_entry (list_front (&t->locks), struct lock, elem)->max_priority;
-    if (lock_priority > max_priority)
-      max_priority = lock_priority;
+    cur->priority = cur->old_priority;
+  } 
+  else
+  {
+    int lock_priority = list_entry (list_front (&cur->locks), struct lock, elem)->max_priority;
+    if(lock_priority > cur->old_priority)
+      cur->priority = lock_priority;
   }
-  t->priority = max_priority;
   intr_set_level (old_level);
 }
 
@@ -916,7 +907,7 @@ lock_priority_more (const struct list_elem *lhs, const struct list_elem *rhs, vo
   return (a->max_priority > b->max_priority);
 }
 
-struct file_info* get_file_info(int fd) {
+struct file_info* get_file_info (int fd) {
   struct thread *cur = thread_current();
   struct list_elem *i;
   for (i = list_begin(&file_list); i != list_end(&file_list); i = list_next(i)) {
@@ -932,11 +923,9 @@ struct file_info* get_file_info(int fd) {
 }
 
 void
-add_file_list(struct file_info *info) {
+add_file_list (struct file_info *info) {
   list_push_back(&file_list, &(info->elem));
 }
-
-
 
 /* Offset of `stack' member within `struct thread'.
    Used by switch.S, which can't figure it out on its own. */

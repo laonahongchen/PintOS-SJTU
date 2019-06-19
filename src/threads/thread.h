@@ -196,7 +196,6 @@ void update_recent_cpu_for_each (void);
 void thread_hold_the_lock (struct lock *lock);
 void thread_donate_priority (struct thread *t);
 void thread_remove_lock (struct lock *lock);
-void thread_update_priority (struct thread *t);
 
 struct file_info* get_file_info(int fd);
 struct child_info* get_child_info(tid_t tid);
