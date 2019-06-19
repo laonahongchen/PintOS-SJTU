@@ -10,10 +10,7 @@
 #include "process.h"
 #include "filesys/file.h"
 #include "filesys/filesys.h"
-
-typedef int pid_t;
-
-
+#include "pagedir.h"
 
 static void syscall_handler (struct intr_frame *);
 
@@ -59,7 +56,7 @@ bool
 check_user(const char *vaddr, int size, bool write) {
   if(!check_translate_user(vaddr + size - 1, write))
     return false;
-  size >>= 12; // to page num so that we only need to check is every page valid
+  size >>= 12;
   do {
     if(!check_translate_user(vaddr, write))
       return false;
@@ -132,6 +129,7 @@ sys_halt(struct intr_frame *f) {
 
 static void
 sys_wait(struct intr_frame *f, pid_t pid) {
+//  printf("in wait");
   f->eax = (uint32_t)process_wait(pid);
 }
 
@@ -147,20 +145,26 @@ sys_exit(struct intr_frame *f, int status) {
 
 static void
 sys_write(struct intr_frame *f, int fd, const void *buffer, unsigned size) {
-  if (!check_user(buffer, size, false))
+  if (!check_user(buffer, size, false)) {
+//    printf("wrong right.");
     exit_status(f, -1);
-  if (fd == STDIN_FILENO)
+  }
+  if (fd == STDIN_FILENO) {
+//    printf("wrong std.");
     exit_status(f, -1);
+  }
   else if (fd == STDOUT_FILENO) {
+//    printf("stdout!!!");
     putbuf(buffer, size);
   } else {
     struct file_info *info = get_file_info(fd);
     if(info != NULL) {
       lock_acquire(&filesys_lock);
-      f->eax = file_write(info->opened_file, buffer, size);
+      f->eax = (uint32_t)file_write(info->opened_file, buffer, size);
       lock_release(&filesys_lock);
     } else {
-      exit_status(f,-1);
+//      printf("not open");
+      exit_status(f, -1);
     }
   }
 }

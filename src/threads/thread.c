@@ -216,7 +216,7 @@ thread_print_stats (void)
 struct child_info* get_child_info(tid_t tid) {
   struct list_elem *e;
   struct child_info *ret;
-  for(e = list_rbegin(&child_list); e != list_rend(&child_list); e = list_prev(e)) {
+  for(e = list_begin(&child_list); e != list_end(&child_list); e = list_next(e)) {
     ret = list_entry(e, struct child_info, allelem);
     if(ret->child_id == tid)
       return ret;
@@ -243,6 +243,7 @@ tid_t
 thread_create (const char *name, int priority,
                thread_func *function, void *aux) 
 {
+//  printf("before create have %d thread in ready_list\n", list_size(&ready_list));
   struct thread *t;
   struct kernel_thread_frame *kf;
   struct switch_entry_frame *ef;
@@ -266,8 +267,8 @@ thread_create (const char *name, int priority,
   info->exited = false;
   info->terminated = false;
   info->load_failed = false;
-  info->sema_start = &(t->sema_start);
-  info->sema_finish = &(t->sema_finish);
+  info->sema_start = &t->sema_start;
+  info->sema_finish = &t->sema_finish;
   info->ret_value = 0;
   list_push_back(&child_list, &info->allelem);
   t->message_to_parent = info;
@@ -302,6 +303,8 @@ thread_create (const char *name, int priority,
     thread_yield ();
   }*/
   thread_cond_yield ();
+
+//  printf("current have %d thread in ready_list\n", list_size(&ready_list));
 
   return tid;
 }
@@ -409,6 +412,7 @@ thread_exit (void)
     }
   }
   if(cur->exec_file != NULL) {
+    file_allow_write(cur->exec_file);
     close_file(cur->exec_file);
   }
 #endif
@@ -782,7 +786,7 @@ alloc_frame (struct thread *t, size_t size)
    will be in the run queue.)  If the run queue is empty, return
    idle_thread. */
 static struct thread *
-next_thread_to_run (void) 
+next_thread_to_run (void)
 {
   if (list_empty (&ready_list))
     return idle_thread;

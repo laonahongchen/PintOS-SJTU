@@ -8,4 +8,7 @@ void
 test_main (void) 
 {
   wait (exec ("child-simple"));
+//  int x = exec("child-simple");
+//  msg ("%zu", x);
+//  wait(x);
 }

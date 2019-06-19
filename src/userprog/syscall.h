@@ -9,6 +9,8 @@
 #include "threads/malloc.h"
 #include "threads/thread.h"
 
+typedef int pid_t;
+
 void syscall_init (void);
 void close_file(struct file *);
 void exit_status(struct intr_frame *f, int status);

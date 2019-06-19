@@ -87,6 +87,7 @@ start_process (void *file_name_)
     sema_up(thread_current()->message_to_parent->sema_start);
     thread_exit();
   }
+  sema_up(thread_current()->message_to_parent->sema_start);
 
   /* Start the user process by simulating a return from an
      interrupt, implemented by intr_exit (in
@@ -387,10 +388,13 @@ load (const char *file_name, void (**eip) (void), void **esp)
   *eip = (void (*) (void)) ehdr.e_entry;
 
   success = true;
+  t->exec_file = file;
+  file_deny_write(file);
 
  done:
   /* We arrive here whether the load is successful or not. */
-  file_close (file);
+  if(!success)
+    file_close (file);
   return success;
 }
 
