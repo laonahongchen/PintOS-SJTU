@@ -129,6 +129,12 @@ pintos_init (void)
   filesys_init (format_filesys);
 #endif
 
+#ifdef VM
+  page_init();
+  frame_init();
+  swap_init();
+#endif
+
   printf ("Boot complete.\n");
 //  if(argv == NULL) {
 //    printf("test\n");

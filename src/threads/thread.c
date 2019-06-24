@@ -1,4 +1,4 @@
-#include "threads/thread.h"
+#include "thread.h"
 #include <debug.h>
 #include <stddef.h>
 #include <random.h>
@@ -16,6 +16,9 @@
 #ifdef USERPROG
 #include "userprog/process.h"
 #include "userprog/syscall.h"
+#endif
+#ifdef VM
+#include "vm/page.h"
 #endif
 
 /* Random value for struct thread's `magic' member.
@@ -753,6 +756,11 @@ init_thread (struct thread *t, const char *name, int priority)
   sema_init(&t->sema_start, 0);
   sema_init(&t->sema_finish, 0);
 
+#ifdef VM
+  list_init(&t->mmap_file_list);
+  t->next_mapid = 1;
+#endif
+
   old_level = intr_disable ();
   list_insert_ordered (&all_list, &t->allelem, thread_priority_more, NULL);
   intr_set_level (old_level);
@@ -930,3 +938,4 @@ add_file_list (struct file_info *info) {
 /* Offset of `stack' member within `struct thread'.
    Used by switch.S, which can't figure it out on its own. */
 uint32_t thread_stack_ofs = offsetof (struct thread, stack);
+

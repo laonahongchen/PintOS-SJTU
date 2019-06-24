@@ -11,6 +11,9 @@
 #include "filesys/file.h"
 #include "filesys/filesys.h"
 #include "pagedir.h"
+#ifdef VM
+#include "vm/page.h"
+#endif
 
 static void syscall_handler (struct intr_frame *);
 
@@ -28,11 +31,13 @@ static void sys_seek(struct intr_frame *f, int fd, unsigned position);
 static void sys_tell(struct intr_frame *f, int fd);
 static void sys_close(struct intr_frame *f, int fd);
 
+static void syscall_mmap(struct intr_frame *f, int fd, const void *obj_vaddr);
+static void syscall_munmap(struct intr_frame *f, mapid_t mapid);
+
 static struct lock filesys_lock;
 
 void
-syscall_init (void) 
-{
+syscall_init (void)  {
   lock_init(&filesys_lock);
   intr_register_int (0x30, 3, INTR_ON, syscall_handler, "syscall");
 }
@@ -49,7 +54,13 @@ bool
 check_translate_user(const char *vaddr, bool write) {
   if(vaddr == NULL || !is_user_vaddr(vaddr))
     return false;
+#ifdef VM
+  struct page_table_elem* base = page_find_lock(thread_current()->page_table, pg_round_down(vaddr));
+  if (base == NULL) return page_fault_handler(vaddr, write, thread_current()->esp);
+  else return !(write && !(base->writable));
+#else
   return pagedir_get_page(thread_current() -> pagedir, vaddr) != NULL;
+#endif
 }
 
 bool
@@ -68,8 +79,12 @@ check_user(const char *vaddr, int size, bool write) {
 
 
 static void
-syscall_handler (struct intr_frame *f /*UNUSED*/) 
-{
+syscall_handler (struct intr_frame *f /*UNUSED*/)  {
+
+#ifdef VM
+  thread_current ()->esp = f->esp;
+#endif
+
   if(!check_user(f->esp, 4, false))
     exit_status(f, -1);
   int syscall_num = *((int*)f->esp);
@@ -77,10 +92,16 @@ syscall_handler (struct intr_frame *f /*UNUSED*/)
 
   switch (syscall_num) {
     case SYS_EXIT: case SYS_EXEC: case SYS_WAIT: case SYS_TELL:  case SYS_REMOVE: case SYS_FILESIZE: case SYS_OPEN: case SYS_CLOSE:
+#ifdef VM
+    case SYS_MUNMAP:
+#endif
       if(!check_user(arg1, 4, false))
         exit_status(f, -1);
       break;
     case SYS_SEEK: case SYS_CREATE:
+#ifdef VM
+    case SYS_MMAP:
+#endif
       if(!check_user(arg1, 8, false))
         exit_status(f, -1);
       break;
@@ -117,6 +138,12 @@ syscall_handler (struct intr_frame *f /*UNUSED*/)
       sys_tell(f, *((int *)arg1)); break;
     case SYS_CLOSE:
       sys_close(f, *((int *)arg1)); break;
+#ifdef VM
+    case SYS_MUNMAP:
+      syscall_munmap(f, *((mapid_t *) arg1)); break;
+    case SYS_MMAP:
+      syscall_mmap(f, *((int *) arg1), *((void **) arg2)); break;
+#endif
 
   }
 
@@ -325,3 +352,153 @@ sys_seek(struct intr_frame *f, int fd, unsigned position) {
   }
 }
 
+#ifdef VM
+bool mmap_check_mmap_vaddr(struct thread *cur, const void *vaddr, int num_page) {
+    bool res = true;
+    for (int i = 0; i < num_page; i++)
+	if (!page_upage_accessable(cur->page_table, i * PGSIZE + vaddr))
+	    res = false;
+    return res;
+}
+
+bool mmap_install_page(struct thread *cur, struct mmap_handler *mh) {
+    bool res = true;
+    for (int i = 0; i < mh->num_page; i++)
+	if (!page_install_file(cur->page_table, mh, mh->mmap_addr + i * PGSIZE))
+	    res = false;
+    if (mh->is_segment)
+	for (int i = mh->num_page; i < mh->num_page_with_segment; i++)
+	    if (!page_install_file(cur->page_table, mh, mh->mmap_addr + i * PGSIZE))
+		res = false;
+    return res;
+}
+
+void mmap_read_file(struct mmap_handler* mh, void *upage, void *kpage) {
+    if (mh->is_segment) {
+	void* addr = mh->mmap_addr + mh->num_page * PGSIZE + mh->last_page_size;
+	if (mh->last_page_size != 0)
+	    addr -= PGSIZE;
+	if (addr > upage) {
+	    if (addr - upage < PGSIZE) {
+		file_read_at(mh->mmap_file, kpage, mh->last_page_size, upage - mh->mmap_addr + mh->file_ofs);
+		memset(kpage + mh->last_page_size, 0, PGSIZE - mh->last_page_size);
+	    } else file_read_at(mh->mmap_file, kpage, PGSIZE, upage - mh->mmap_addr + mh->file_ofs);
+	} else memset(kpage, 0, PGSIZE);
+    } else {
+	if (mh->mmap_addr + file_length(mh->mmap_file) - upage < PGSIZE) {
+	    file_read_at(mh->mmap_file, kpage, mh->last_page_size, upage - mh->mmap_addr + mh->file_ofs);
+	    memset(kpage + mh->last_page_size, 0, PGSIZE - mh->last_page_size);
+	} else file_read_at(mh->mmap_file, kpage, PGSIZE, upage - mh->mmap_addr + mh->file_ofs);
+    }
+}
+
+void mmap_write_file(struct mmap_handler* mh, void* upage, void *kpage) {
+    if (mh->writable) {
+	if (mh->is_segment) {
+	    void* addr = mh->mmap_addr + mh->num_page * PGSIZE + mh->last_page_size;
+	    if (addr > upage) {
+		if (addr - upage < PGSIZE) file_write_at(mh->mmap_file, kpage, mh->last_page_size, upage - mh->mmap_addr + mh->file_ofs);
+		else file_write_at(mh->mmap_file, kpage, PGSIZE, upage - mh->mmap_addr + mh->file_ofs);
+	    }
+	} else {
+	    if (mh->mmap_addr + file_length(mh->mmap_file) - upage < PGSIZE)
+		file_write_at(mh->mmap_file, kpage, mh->last_page_size, upage - mh->mmap_addr + mh->file_ofs);
+	    else
+		file_write_at(mh->mmap_file, kpage, PGSIZE, upage - mh->mmap_addr + mh->file_ofs);
+	}
+    }
+}
+
+bool mmap_load_segment(struct file *file, off_t ofs, uint8_t *upage, uint32_t read_bytes, uint32_t zero_bytes, bool writable) {
+    ASSERT(!((read_bytes + zero_bytes) & PGMASK)) struct thread* cur = thread_current();
+    mapid_t mapid = cur->next_mapid++;
+    struct mmap_handler* mh = malloc(sizeof(struct mmap_handler));
+    mh->mapid = mapid;
+    mh->mmap_file = file;
+    mh->writable = writable;
+    mh->is_static_data = writable;
+    int num_page = read_bytes / PGSIZE;
+    int total_num_page = ((read_bytes + zero_bytes) / PGSIZE);
+    int last_page_used = read_bytes & PGMASK;
+    if (last_page_used != 0) num_page++;
+    if (!mmap_check_mmap_vaddr(cur, upage, total_num_page)) return false;
+    mh->mmap_addr = upage;
+    mh->num_page = num_page;
+    mh->last_page_size = last_page_used;
+    mh->num_page_with_segment = total_num_page;
+    mh->is_segment = true;
+    mh ->file_ofs = ofs;
+    list_push_back(&(cur->mmap_file_list), &(mh->elem));
+    return mmap_install_page(cur, mh);
+}
+
+
+static void syscall_mmap(struct intr_frame* f, int fd, const void* obj_vaddr) {
+    if (fd == 0 || fd == 1) {
+	f->eax = -1;
+	return;
+    }
+    if (obj_vaddr == NULL || ((uint32_t) obj_vaddr % (uint32_t)PGSIZE != 0)) {
+	f->eax = -1;
+	return;
+    }
+    struct thread* cur = thread_current();
+    struct file_info* fh = get_file_info(fd);
+    if (fh != NULL) {
+	mapid_t mapid = cur->next_mapid++;
+	struct mmap_handler *mh = malloc(sizeof(struct mmap_handler));
+	mh->mapid = mapid;
+	mh->mmap_file = file_reopen(fh->opened_file);
+	mh->writable = true;
+	mh->is_segment = false;
+	mh->is_static_data = false;
+	mh->file_ofs = 0;
+	off_t file_size = file_length(mh->mmap_file);
+	int num_page = file_size / PGSIZE;
+	int last_page_used = file_size % PGSIZE;
+	if (last_page_used != 0) num_page++;
+	if (!mmap_check_mmap_vaddr(cur, obj_vaddr, num_page)) {
+	    f->eax = -1;
+	    return;
+	}
+	mh->mmap_addr = obj_vaddr;
+	mh->num_page = num_page;
+	mh->num_page_with_segment = num_page;
+	mh->last_page_size = last_page_used;
+	list_push_back(&(cur->mmap_file_list), &(mh->elem));
+	if(!mmap_install_page(cur, mh)) {
+	    f->eax = -1;
+	    return;
+	}
+	f->eax = (uint32_t) mapid;
+    } else {
+	f->eax = -1;
+	return;
+    }
+}
+
+static void syscall_munmap(struct intr_frame *f, mapid_t mapid) {
+    struct thread* cur = thread_current();
+    if (list_empty(&cur->mmap_file_list)) {
+	f->eax = -1;
+	return;
+    }
+    struct mmap_handler* mh = syscall_get_mmap_handle(mapid);
+    if (mh == NULL) {
+	f->eax = -1;
+	return;
+    }
+    for (int i = 0; i < mh->num_page; i++) {
+	if (!page_unmap(cur->page_table, mh->mmap_addr + i * PGSIZE)) {
+	    delete_mmap_handle(mh);
+	    f->eax = -1;
+	    return;
+	}
+    }
+    if (!delete_mmap_handle(mh)) {
+	f->eax = -1;
+	return;
+    }
+}
+
+#endif

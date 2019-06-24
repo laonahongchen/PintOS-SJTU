@@ -18,6 +18,8 @@ enum thread_status
 /* Thread identifier type.
    You can redefine this to whatever type you like. */
 typedef int tid_t;
+typedef int mapid_t;
+typedef int off_t;
 #define TID_ERROR ((tid_t) -1)          /* Error value for tid_t. */
 
 /* Thread priorities. */
@@ -29,6 +31,20 @@ typedef int tid_t;
 #define NICE_MAX 20                     /* Highest nice. */
 
 struct thread;
+
+struct mmap_handler{
+    mapid_t mapid;
+    struct file* mmap_file; 
+    void* mmap_addr; 
+    int num_page; 
+    int last_page_size; 
+    struct list_elem elem;
+    bool writable;
+    bool is_segment; 
+    bool is_static_data; 
+    int num_page_with_segment;
+    off_t file_ofs;
+};
 
 struct child_info
 {
@@ -139,12 +155,26 @@ struct thread
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
-  struct file* exec_file;
+    struct file* exec_file;
+#endif
+
+#ifdef VM
+    struct hash* page_table;
+    void* esp;
+    struct list mmap_file_list;
+    mapid_t next_mapid;
 #endif
 
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
   };
+
+struct file_handle{
+    int fd;
+    struct file* opened_file;
+    struct thread* owned_thread;
+    struct list_elem elem;
+};
 
 /* If false (default), use round-robin scheduler.
    If true, use multi-level feedback queue scheduler.
