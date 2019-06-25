@@ -595,8 +595,8 @@ install_page (void *upage, void *kpage, bool writable)
 
 }
 
-struct mmap_handler* syscall_get_mmap_handle(mapid_t mapid) {
 #ifdef VM
+struct mmap_handler* syscall_get_mmap_handle(mapid_t mapid) {
   struct thread* cur = thread_current();
   struct list_elem *i;
   struct mmap_handler *mh;
@@ -607,11 +607,9 @@ struct mmap_handler* syscall_get_mmap_handle(mapid_t mapid) {
     }
   }
   return NULL;
-#endif
 }
 
 bool delete_mmap_handle(struct mmap_handler *mh) {
-#ifdef VM
   struct thread* cur = thread_current();
   struct list_elem *i;
   struct mmap_handler *tmp_mh;
@@ -628,5 +626,6 @@ bool delete_mmap_handle(struct mmap_handler *mh) {
     }
   }
   return false;
-#endif
 }
+#endif
+
