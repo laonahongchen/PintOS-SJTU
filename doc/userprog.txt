@@ -1,0 +1,33 @@
+---- Terminating Message ----
+
+This is a very easy part of project 2, the only need to do is to find where every process exit. So just by searching the name we can find the function process_exit(). Then we just add a line of printf code to output the name of the process before we finally exit and do schedule.
+
+---- Argument Passing ----
+
+This is also a part which the implmentation is almost determined accurately by the document. We find process_execute and a few other functions where we need the name of the process. And we can use the strtok_r() function to parse the input and then get the real file name of the process to be exxcuted and start the process. For the arguments to be pushed into stack, we need to do that when the process start so we do this in start_process(). In this function, we get all the arguments by using the strtok_r() function and push them in to the stack.
+
+This is the very first part we need to look at the frame, we find that we only need to substract the esp pointer and we will get the answer.
+
+---- System Call ----
+
+This is the hardest part in project 2. 
+
+We are supposed to get some syscall in syscall_handler(), and call some functions already written. And we need to slightly change a few functions to make it run in the correct order.
+
+I use syscall_handler() to get a syscall, and check if all the argument passed here can be fetched and is not given some kernel address. In this part, I parse the frame given and check the possible number of arguments(i.e. 1,2,3), and in the same time, we get them in int type to make coding easier. By using is_user_addr(), we get check if they follow the memory. After checking, we send them to the correspondent function in syscall.c to finish doing them.
+
+For halt, we call shutdown_power_off().
+
+For exit, we need to erase all the things we created new. 
+
+For wait and exec, we need to make sure that even if the child process has already died before we continue in father process, we can still get the answer. So we use a list to save the information of the son. And by using semaphore, we can make it truly wait for the child process. For exec(), we only need to use process_create() and make sure we have saved the things I mentioned above.
+
+In this part, all the syscalls which is related to file system is very easy, we only need to use a lock to make sure we do not use them in the same time. And then we only need to call the functions.
+
+
+
+
+
+---- Denying Writes to Excutables ----
+
+When we start a process, we have to deny write to it, so we do this in load() function where we load an excutable to kernel and make it run. And when a thread_exit, we change it to writeable.
