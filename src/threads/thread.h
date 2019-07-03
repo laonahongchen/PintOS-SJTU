@@ -62,6 +62,7 @@ struct child_info
 struct file_info{
   int fd;
   struct file* opened_file;
+  struct dir* opened_dir;
   struct thread* thread_num;
 
   struct list_elem elem;
@@ -167,6 +168,7 @@ struct thread
 
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
+    struct dir* cwd;
   };
 
 struct file_handle{

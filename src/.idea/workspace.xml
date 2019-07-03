@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="BookmarkManager">
+    <bookmark url="file://$PROJECT_DIR$/userprog/syscall.c" line="586" mnemonic="9" />
+  </component>
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
       <config projectName="src" targetName="src" />
@@ -12,13 +15,44 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ef21a832-3510-4050-a73a-a7c903a89ca9" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../.vscode/ipch/1e2351bcedcd9aee/syscall.ipch" beforeDir="false" afterPath="$PROJECT_DIR$/../.vscode/ipch/1e2351bcedcd9aee/syscall.ipch" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src.zip" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/userprog/exec-once.c" beforeDir="false" afterPath="$PROJECT_DIR$/tests/userprog/exec-once.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/userprog/rox-simple.c" beforeDir="false" afterPath="$PROJECT_DIR$/tests/userprog/rox-simple.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile.build" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile.build" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.14.3/CMakeDetermineCompilerABI_C.bin" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.14.3/CMakeDetermineCompilerABI_C.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.14.3/CMakeDetermineCompilerABI_CXX.bin" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.14.3/CMakeDetermineCompilerABI_CXX.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.14.3/CMakeSystem.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.14.3/CMakeSystem.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.14.3/CompilerIdC/a.out" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.14.3/CompilerIdC/a.out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.14.3/CompilerIdCXX/a.out" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.14.3/CompilerIdCXX/a.out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeDirectoryInformation.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeDirectoryInformation.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TargetDirectories.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TargetDirectories.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/feature_tests.bin" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/feature_tests.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/src.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/src.dir/DependInfo.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/src.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/src.dir/build.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/src.dir/flags.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/src.dir/flags.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/cmake_install.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/cmake_install.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/src.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/src.cbp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filesys/Make.vars" beforeDir="false" afterPath="$PROJECT_DIR$/filesys/Make.vars" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filesys/directory.c" beforeDir="false" afterPath="$PROJECT_DIR$/filesys/directory.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filesys/directory.h" beforeDir="false" afterPath="$PROJECT_DIR$/filesys/directory.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filesys/file.c" beforeDir="false" afterPath="$PROJECT_DIR$/filesys/file.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filesys/file.h" beforeDir="false" afterPath="$PROJECT_DIR$/filesys/file.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filesys/filesys.c" beforeDir="false" afterPath="$PROJECT_DIR$/filesys/filesys.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filesys/filesys.h" beforeDir="false" afterPath="$PROJECT_DIR$/filesys/filesys.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filesys/free-map.c" beforeDir="false" afterPath="$PROJECT_DIR$/filesys/free-map.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filesys/fsutil.c" beforeDir="false" afterPath="$PROJECT_DIR$/filesys/fsutil.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filesys/inode.c" beforeDir="false" afterPath="$PROJECT_DIR$/filesys/inode.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filesys/inode.h" beforeDir="false" afterPath="$PROJECT_DIR$/filesys/inode.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/threads/thread.c" beforeDir="false" afterPath="$PROJECT_DIR$/threads/thread.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/threads/thread.h" beforeDir="false" afterPath="$PROJECT_DIR$/threads/thread.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/userprog/process.c" beforeDir="false" afterPath="$PROJECT_DIR$/userprog/process.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/userprog/syscall.c" beforeDir="false" afterPath="$PROJECT_DIR$/userprog/syscall.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/userprog/syscall.h" beforeDir="false" afterPath="$PROJECT_DIR$/userprog/syscall.h" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -32,23 +66,81 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/userprog/syscall.c">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="396">
-              <caret line="170" selection-start-line="170" selection-end-line="170" />
+              <caret line="635" column="31" lean-forward="true" selection-start-line="635" selection-start-column="31" selection-end-line="635" selection-end-column="31" />
               <folding>
                 <element signature="e#0#29#0" expanded="true" />
+                <element signature="e#2437#2505#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/devices/shutdown.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="565">
+              <caret line="120" selection-start-line="120" selection-end-line="120" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/filesys/extended/dir-open.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="286">
+              <caret line="15" selection-start-line="15" selection-end-line="15" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/filesys/filesys.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="235">
+              <caret line="39" selection-start-line="39" selection-end-line="39" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/threads/thread.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="327">
-              <caret line="414" column="37" selection-start-line="414" selection-start-column="37" selection-end-line="414" selection-end-column="37" />
+            <state relative-caret-position="308">
+              <caret line="29" column="31" selection-start-line="29" selection-start-column="31" selection-end-line="29" selection-end-column="31" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/filesys/directory.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="3630">
+              <caret line="172" selection-start-line="172" selection-end-line="172" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/filesys/extended/dir-open.ck">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="154">
+              <caret line="7" column="23" selection-start-line="7" selection-start-column="23" selection-end-line="7" selection-end-column="23" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/filesys/inode.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="235">
+              <caret line="427" selection-start-line="427" selection-end-line="427" />
+              <folding>
+                <element signature="e#0#26#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -56,65 +148,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/filesys/file.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="227">
-              <caret line="138" column="6" selection-start-line="138" selection-start-column="6" selection-end-line="138" selection-end-column="6" />
+            <state relative-caret-position="235">
+              <caret line="57" selection-start-line="57" selection-end-line="57" />
               <folding>
                 <element signature="e#0#25#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/userprog/process.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="249">
-              <caret line="381" selection-start-line="381" selection-end-line="381" />
-              <folding>
-                <element signature="e#0#29#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/userprog/pagedir.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="235">
-              <caret line="125" selection-start-line="125" selection-end-line="125" />
-              <folding>
-                <element signature="e#0#29#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/lib.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="396">
-              <caret line="105" selection-start-line="105" selection-end-line="105" />
-              <folding>
-                <element signature="e#0#22#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/examples/cp.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="110">
-              <caret line="35" column="44" selection-start-line="35" selection-start-column="44" selection-end-line="35" selection-end-column="44" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lib/user/syscall.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="395">
-              <caret line="19" column="8" selection-start-line="19" selection-start-column="8" selection-end-line="19" selection-end-column="8" />
             </state>
           </provider>
         </entry>
@@ -135,20 +173,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>child_thread</find>
-      <find>get_</find>
-      <find>allelem</find>
-      <find>process_wait</find>
-      <find>wait</find>
-      <find>sleep_list</find>
-      <find>execute</find>
-      <find>exec</find>
-      <find>msg</find>
-      <find>ready_list</find>
-      <find>next_thread_to_run</find>
-      <find>create</find>
-      <find>sema_start</find>
-      <find>thread_create</find>
       <find>in wait</find>
       <find>printf</find>
       <find>sys_write</find>
@@ -162,9 +186,23 @@
       <find>allow_write</find>
       <find>file_allow_write</find>
       <find>inode_allow</find>
-      <find>exit</find>
       <find>open_cnt</find>
       <find>write</find>
+      <find>initial</find>
+      <find>thread_start</find>
+      <find>thread_create</find>
+      <find>process_execute</find>
+      <find>execute</find>
+      <find>page_init</find>
+      <find>start_process</find>
+      <find>get_file_info</find>
+      <find>sys_open</find>
+      <find>exit</find>
+      <find>init_thread</find>
+      <find>create</find>
+      <find>dir_reopen</find>
+      <find>open</find>
+      <find>halt</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -177,7 +215,6 @@
         <option value="$PROJECT_DIR$/filesys/filesys.c" />
         <option value="$PROJECT_DIR$/userprog/pagedir.c" />
         <option value="$PROJECT_DIR$/filesys/file.h" />
-        <option value="$PROJECT_DIR$/threads/thread.h" />
         <option value="$PROJECT_DIR$/threads/synch.c" />
         <option value="$PROJECT_DIR$/lib/kernel/list.c" />
         <option value="$PROJECT_DIR$/threads/init.c" />
@@ -187,10 +224,11 @@
         <option value="$PROJECT_DIR$/userprog/exception.c" />
         <option value="$PROJECT_DIR$/userprog/syscall.h" />
         <option value="$PROJECT_DIR$/tests/userprog/exec-once.c" />
-        <option value="$PROJECT_DIR$/userprog/syscall.c" />
         <option value="$PROJECT_DIR$/tests/userprog/rox-simple.c" />
+        <option value="$PROJECT_DIR$/threads/thread.h" />
         <option value="$PROJECT_DIR$/userprog/process.c" />
         <option value="$PROJECT_DIR$/threads/thread.c" />
+        <option value="$PROJECT_DIR$/userprog/syscall.c" />
       </list>
     </option>
   </component>
@@ -217,12 +255,7 @@
             <path>
               <item name="src" type="b2602c69:ProjectViewProjectNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="tests" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="src" type="b2602c69:ProjectViewProjectNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="userprog" type="462c0819:PsiDirectoryNode" />
+              <item name="threads" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -235,6 +268,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="TEXT" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -269,8 +303,8 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="GDB Remote Debug.userprog" />
       <item itemvalue="GDB Remote Debug.thread" />
+      <item itemvalue="GDB Remote Debug.userprog" />
     </list>
   </component>
   <component name="SvnConfiguration">
@@ -316,17 +350,24 @@
       <workItem from="1560837828694" duration="3455000" />
       <workItem from="1560904753262" duration="6404000" />
       <workItem from="1560922489015" duration="14197000" />
+      <workItem from="1561341562440" duration="3495000" />
+      <workItem from="1561352912811" duration="1558000" />
+      <workItem from="1561389826621" duration="2086000" />
+      <workItem from="1561423993836" duration="2657000" />
+      <workItem from="1561443215116" duration="2977000" />
+      <workItem from="1561478122655" duration="2350000" />
+      <workItem from="1561510278501" duration="4548000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="134050000" />
+    <option name="totallyTimeSpent" value="153721000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="67" y="25" width="1851" height="863" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.15401661" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16565096" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -340,7 +381,7 @@
       <window_info anchor="bottom" id="Terminal" order="8" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="10" />
-      <window_info anchor="bottom" id="CMake" order="11" weight="0.1830635" />
+      <window_info anchor="bottom" id="CMake" order="11" weight="0.18256131" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -376,77 +417,47 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/threads/init.c</url>
-          <line>147</line>
-          <option name="timeStamp" value="12" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/threads/init.c</url>
-          <line>146</line>
-          <option name="timeStamp" value="25" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/threads/init.c</url>
-          <line>138</line>
-          <option name="timeStamp" value="26" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/threads/init.c</url>
-          <line>140</line>
-          <option name="timeStamp" value="28" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/threads/init.c</url>
-          <line>137</line>
-          <option name="timeStamp" value="30" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/threads/init.c</url>
-          <line>302</line>
+          <line>308</line>
           <option name="timeStamp" value="38" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/userprog/exception.c</url>
-          <line>158</line>
+          <line>167</line>
           <option name="timeStamp" value="83" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/userprog/exception.c</url>
-          <line>139</line>
+          <line>140</line>
           <option name="timeStamp" value="84" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/userprog/process.c</url>
-          <line>189</line>
+          <line>217</line>
           <option name="timeStamp" value="88" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/threads/thread.c</url>
-          <line>393</line>
+          <line>406</line>
           <option name="timeStamp" value="92" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/userprog/process.c</url>
-          <line>32</line>
+          <line>33</line>
           <option name="timeStamp" value="93" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/userprog/syscall.c</url>
-          <line>132</line>
+          <line>185</line>
           <option name="timeStamp" value="95" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/userprog/syscall.c</url>
-          <line>72</line>
+          <line>96</line>
           <option name="timeStamp" value="97" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/userprog/syscall.c</url>
-          <line>92</line>
-          <option name="timeStamp" value="98" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/threads/thread.c</url>
-          <line>852</line>
+          <line>863</line>
           <option name="timeStamp" value="101" />
         </line-breakpoint>
       </breakpoints>
@@ -475,30 +486,6 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/lib/kernel/list.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2354">
-          <caret line="107" column="8" selection-start-line="107" selection-start-column="8" selection-end-line="107" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/filesys/directory.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="418">
-          <caret line="19" column="7" selection-start-line="19" selection-start-column="7" selection-end-line="19" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/filesys/file.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="132">
-          <caret line="6" column="12" selection-start-line="6" selection-start-column="12" selection-end-line="6" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/filesys/off_t.h">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/threads/interrupt.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="418">
@@ -548,23 +535,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/filesys/filesys.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="138">
-          <caret line="72" selection-start-line="72" selection-end-line="72" />
-          <folding>
-            <element signature="e#0#28#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/vaddr.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="858">
-          <caret line="39" selection-start-line="39" selection-end-line="39" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/threads/malloc.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5698">
@@ -590,13 +560,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1760">
           <caret line="80" selection-start-line="80" selection-end-line="80" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/filesys/directory.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1628">
-          <caret line="74" selection-start-line="74" selection-end-line="74" />
         </state>
       </provider>
     </entry>
@@ -635,37 +598,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/threads/thread.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="814">
-          <caret line="37" column="18" selection-start-line="37" selection-start-column="18" selection-end-line="37" selection-end-column="18" />
-          <folding>
-            <element signature="e#51#69#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/synch.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2574">
-          <caret line="117" selection-start-line="117" selection-end-line="117" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Make.config">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="902">
           <caret line="41" column="47" lean-forward="true" selection-start-line="41" selection-start-column="47" selection-end-line="41" selection-end-column="47" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/threads/init.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6556">
-          <caret line="298" column="2" selection-start-line="298" selection-start-column="2" selection-end-line="298" selection-end-column="2" />
-          <folding>
-            <element signature="e#0#25#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -758,7 +694,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/userprog/pagedir.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="235">
+        <state relative-caret-position="2750">
           <caret line="125" selection-start-line="125" selection-end-line="125" />
           <folding>
             <element signature="e#0#29#0" expanded="true" />
@@ -766,23 +702,79 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/user/syscall.h">
+    <entry file="file://$PROJECT_DIR$/userprog/process.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="395">
-          <caret line="19" column="8" selection-start-line="19" selection-start-column="8" selection-end-line="19" selection-end-column="8" />
+        <state relative-caret-position="198">
+          <caret line="9" selection-start-line="9" selection-end-line="9" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/examples/cp.c">
+    <entry file="file://$PROJECT_DIR$/tests/threads/priority-donate-chain.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="110">
-          <caret line="35" column="44" selection-start-line="35" selection-start-column="44" selection-end-line="35" selection-end-column="44" />
+        <state relative-caret-position="1474">
+          <caret line="71" column="6" selection-start-line="71" selection-start-column="6" selection-end-line="71" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/threads/priority-donate-multiple2.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="78" lean-forward="true" selection-start-line="78" selection-end-line="78" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/init.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2090">
+          <caret line="95" column="55" selection-start-line="95" selection-start-column="55" selection-end-line="95" selection-end-column="55" />
+          <folding>
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#602#631#0" expanded="true" />
+            <element signature="e#752#784#0" expanded="true" />
+            <element signature="e#807#833#0" expanded="true" />
+            <element signature="e#7727#7743#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/synch.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2904">
+          <caret line="132" column="35" selection-start-line="132" selection-start-column="35" selection-end-line="132" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/userprog/process.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1870">
+          <caret line="85" column="27" selection-start-line="85" selection-start-column="27" selection-end-line="85" selection-end-column="27" />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
+            <element signature="e#17233#17497#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/thread.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3564">
+          <caret line="162" column="28" selection-start-line="162" selection-start-column="28" selection-end-line="162" selection-end-column="28" />
+          <folding>
+            <element signature="e#51#69#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/threads/vaddr.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1628">
+          <caret line="74" selection-start-line="74" selection-end-line="74" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/lib.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="396">
+        <state relative-caret-position="2310">
           <caret line="105" selection-start-line="105" selection-end-line="105" />
           <folding>
             <element signature="e#0#22#0" expanded="true" />
@@ -790,13 +782,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/userprog/syscall.c">
+    <entry file="file://$PROJECT_DIR$/examples/cp.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="396">
-          <caret line="170" selection-start-line="170" selection-end-line="170" />
-          <folding>
-            <element signature="e#0#29#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="770">
+          <caret line="35" column="44" selection-start-line="35" selection-start-column="44" selection-end-line="35" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/user/syscall.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="418">
+          <caret line="19" column="8" selection-start-line="19" selection-start-column="8" selection-end-line="19" selection-end-column="8" />
         </state>
       </provider>
     </entry>
@@ -810,40 +806,76 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/filesys/inode.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="335" column="52" lean-forward="true" selection-start-line="335" selection-start-column="52" selection-end-line="335" selection-end-column="52" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/filesys/file.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="227">
-          <caret line="138" column="6" selection-start-line="138" selection-start-column="6" selection-end-line="138" selection-end-column="6" />
+        <state relative-caret-position="235">
+          <caret line="57" selection-start-line="57" selection-end-line="57" />
           <folding>
             <element signature="e#0#25#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/userprog/process.c">
+    <entry file="file://$PROJECT_DIR$/filesys/inode.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="249">
-          <caret line="381" selection-start-line="381" selection-end-line="381" />
+        <state relative-caret-position="235">
+          <caret line="427" selection-start-line="427" selection-end-line="427" />
           <folding>
-            <element signature="e#0#29#0" expanded="true" />
+            <element signature="e#0#26#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/filesys/extended/dir-open.ck">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="7" column="23" selection-start-line="7" selection-start-column="23" selection-end-line="7" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filesys/directory.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3630">
+          <caret line="172" selection-start-line="172" selection-end-line="172" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/threads/thread.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="327">
-          <caret line="414" column="37" selection-start-line="414" selection-start-column="37" selection-end-line="414" selection-end-column="37" />
+        <state relative-caret-position="308">
+          <caret line="29" column="31" selection-start-line="29" selection-start-column="31" selection-end-line="29" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filesys/filesys.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="235">
+          <caret line="39" selection-start-line="39" selection-end-line="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/devices/shutdown.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="565">
+          <caret line="120" selection-start-line="120" selection-end-line="120" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/filesys/extended/dir-open.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="15" selection-start-line="15" selection-end-line="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/userprog/syscall.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="396">
+          <caret line="635" column="31" lean-forward="true" selection-start-line="635" selection-start-column="31" selection-end-line="635" selection-end-column="31" />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
+            <element signature="e#2437#2505#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

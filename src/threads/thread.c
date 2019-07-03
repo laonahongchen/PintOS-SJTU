@@ -20,6 +20,9 @@
 #ifdef VM
 #include "vm/page.h"
 #endif
+#ifdef FILESYS
+#include "filesys/directory.h"
+#endif
 
 /* Random value for struct thread's `magic' member.
    Used to detect stack overflow.  See the big comment at the top
@@ -290,6 +293,13 @@ thread_create (const char *name, int priority,
   sf = alloc_frame (t, sizeof *sf);
   sf->eip = switch_entry;
   sf->ebp = 0;
+
+#ifdef FILESYS
+  if(thread_current()->cwd)
+    t->cwd = dir_reopen(thread_current()->cwd);
+  else
+    t->cwd = NULL;
+#endif
 
   /* Add to run queue. */
   thread_unblock (t);
@@ -755,6 +765,8 @@ init_thread (struct thread *t, const char *name, int priority)
   list_init(&t->child_list);
   sema_init(&t->sema_start, 0);
   sema_init(&t->sema_finish, 0);
+
+  t->cwd = NULL;
 
 #ifdef VM
   list_init(&t->mmap_file_list);

@@ -1,4 +1,4 @@
-# Install script for directory: /home/ubuntu/System2019/pintos/pos/src
+# Install script for directory: /home/ubuntu/System2019/model/merge_2/pos/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/ubuntu/System2019/pintos/pos/src/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/ubuntu/System2019/model/merge_2/pos/src/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

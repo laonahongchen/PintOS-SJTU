@@ -14,6 +14,9 @@
 #ifdef VM
 #include "vm/page.h"
 #endif
+#ifdef FILESYS
+#include "filesys/inode.h"
+#endif
 
 static void syscall_handler (struct intr_frame *);
 
@@ -33,6 +36,12 @@ static void sys_close(struct intr_frame *f, int fd);
 
 static void syscall_mmap(struct intr_frame *f, int fd, const void *obj_vaddr);
 static void syscall_munmap(struct intr_frame *f, mapid_t mapid);
+
+static void sys_chdir(struct intr_frame *f, const char *name);
+static void sys_mkdir(struct intr_frame *f, const char *name);
+static void sys_readdir(struct intr_frame *f, int fd, char *name);
+static void sys_isdir(struct intr_frame *f, int fd);
+static void sys_inumber(struct intr_frame *f, int fd);
 
 static struct lock filesys_lock;
 
@@ -95,12 +104,18 @@ syscall_handler (struct intr_frame *f /*UNUSED*/)  {
 #ifdef VM
     case SYS_MUNMAP:
 #endif
+#ifdef FILESYS
+    case SYS_MKDIR: case SYS_CHDIR: case SYS_ISDIR: case SYS_INUMBER:
+#endif
       if(!check_user(arg1, 4, false))
         exit_status(f, -1);
       break;
     case SYS_SEEK: case SYS_CREATE:
 #ifdef VM
     case SYS_MMAP:
+#endif
+#ifdef FILESYS
+    case SYS_READDIR:
 #endif
       if(!check_user(arg1, 8, false))
         exit_status(f, -1);
@@ -144,7 +159,18 @@ syscall_handler (struct intr_frame *f /*UNUSED*/)  {
     case SYS_MMAP:
       syscall_mmap(f, *((int *) arg1), *((void **) arg2)); break;
 #endif
-
+#ifdef FILESYS
+    case SYS_CHDIR:
+      sys_chdir(f, *((void **) arg1)); break;
+    case SYS_MKDIR:
+      sys_mkdir(f, *((void **) arg1)); break;
+    case SYS_READDIR:
+      sys_readdir(f, *((int *)arg1), *((void **) arg2)); break;
+    case SYS_ISDIR:
+      sys_isdir(f, *((int *)arg1));
+    case SYS_INUMBER:
+      sys_inumber(f, *((int *)arg1));
+#endif
   }
 
 }
@@ -185,7 +211,7 @@ sys_write(struct intr_frame *f, int fd, const void *buffer, unsigned size) {
     putbuf(buffer, size);
   } else {
     struct file_info *info = get_file_info(fd);
-    if(info != NULL) {
+    if(info != NULL && info->opened_dir == NULL) {
       lock_acquire(&filesys_lock);
       f->eax = (uint32_t)file_write(info->opened_file, buffer, size);
       lock_release(&filesys_lock);
@@ -259,7 +285,7 @@ sys_exec(struct intr_frame *f, const char *cmd_line) {
       sema_down(l->sema_start);
       if(l->load_failed)
         f->eax = (uint32_t)-1;
-      return ;
+      return;
     }
   }
 }
@@ -280,6 +306,15 @@ sys_open(struct intr_frame *f, const char *name) {
   info->opened_file = tmp;
   info->thread_num = thread_current();
   info->fd = fd_next++;
+  lock_acquire(&filesys_lock);
+  struct inode *inode = file_get_inode(info->opened_file);
+  if(inode != NULL && inode_is_dir(inode)) {
+    info->opened_dir = dir_open( inode_reopen(inode) );
+  }
+  else
+    info->opened_dir = NULL;
+
+  lock_release(&filesys_lock);
   add_file_list(info);
   f->eax = (uint32_t)info->fd;
 }
@@ -289,7 +324,7 @@ sys_create(struct intr_frame *f, const char *name, unsigned initial_size) {
   if(!check_string(name))
     exit_status(f, -1);
   lock_acquire(&filesys_lock);
-  f->eax = (uint32_t)filesys_create(name, initial_size);
+  f->eax = (uint32_t)filesys_create(name, initial_size, false);
   lock_release(&filesys_lock);
 }
 
@@ -320,6 +355,8 @@ sys_close(struct intr_frame *f, int fd) {
   if(info != NULL) {
     lock_acquire(&filesys_lock);
     file_close(info->opened_file);
+    if(info->opened_dir != NULL)
+      dir_close(info->opened_dir);
     lock_release(&filesys_lock);
     list_remove(&info->elem);
     free(info);
@@ -499,6 +536,105 @@ static void syscall_munmap(struct intr_frame *f, mapid_t mapid) {
 	f->eax = -1;
 	return;
     }
+}
+
+#endif
+#ifdef FILESYS
+
+static void
+sys_chdir(struct intr_frame *f, const char *name)
+{
+  if(!check_string(name))
+    exit_status(f, -1);
+//  bool return_code;
+//  check_user((const uint8_t*) filename);
+
+  lock_acquire (&filesys_lock);
+  f->eax = filesys_chdir(name);
+  lock_release (&filesys_lock);
+
+//  return return_code;
+}
+
+static void
+sys_mkdir(struct intr_frame *f, const char *name)
+{
+  if(!check_string(name))
+    exit_status(f, -1);
+//  bool return_code;
+//  check_user((const uint8_t*) filename);
+
+  lock_acquire (&filesys_lock);
+  f->eax = filesys_create(name, 0, true);
+  lock_release (&filesys_lock);
+
+//  return return_code;
+}
+
+static void
+sys_readdir(struct intr_frame *f, int fd, char *name)
+{
+  if(!check_string(name))
+    exit_status(f, -1);
+
+//  struct file_desc* file_d;
+//  bool ret = false;
+  f->eax = 0;
+
+  lock_acquire (&filesys_lock);
+  //file_d = find_file_desc(thread_current(), fd, FD_DIRECTORY);
+  struct file_info *info = get_file_info(fd);
+  if (info == NULL) goto done;
+  if (info->opened_dir == NULL)
+    goto done;
+//  if (file_d == NULL) goto done;
+
+  struct inode *inode;
+  inode = file_get_inode(info->opened_file); // file descriptor -> inode
+  if(inode == NULL) goto done;
+
+  // check whether it is a valid directory
+  if(! inode_is_dir(inode)) goto done;
+
+//  ASSERT (file_d->dir != NULL); // see sys_open()
+  f->eax = dir_readdir (info->opened_dir, name);
+
+  done:
+  lock_release (&filesys_lock);
+//  return ret;
+}
+
+static void
+sys_isdir(struct intr_frame *f, int fd)
+{
+  lock_acquire (&filesys_lock);
+
+  struct file_info *info = get_file_info(fd);
+  if (info == NULL) {
+    f->eax = 0;
+    return ;
+  }
+  f->eax = inode_is_dir (file_get_inode(info->opened_file));
+
+  lock_release (&filesys_lock);
+//  return ret;
+}
+
+static void
+sys_inumber(struct intr_frame *f, int fd)
+{
+  lock_acquire (&filesys_lock);
+
+//  struct file_desc* file_d = find_file_desc(thread_current(), fd, FD_FILE | FD_DIRECTORY);
+  struct file_info *info = get_file_info(fd);
+  if (info == NULL) {
+    f->eax = 0;
+    return ;
+  }
+  f->eax = (int) inode_get_inumber (file_get_inode(info->opened_file));
+
+  lock_release (&filesys_lock);
+//  return ret;
 }
 
 #endif

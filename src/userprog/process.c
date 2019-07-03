@@ -77,7 +77,15 @@ start_process (void *file_name_)
   token = strtok_r(file_name, " ", &save_ptr);
 
   success = load (token, &if_.eip, &if_.esp);
-
+/*
+  if (pcb->parent_thread != NULL && pcb->parent_thread->cwd != NULL) {
+    // child process inherits the CWD
+    t->cwd = dir_reopen(pcb->parent_thread->cwd);
+  }
+  else {
+    t->cwd = dir_open_root();
+  }
+*/
   /* If load failed, quit. */
   //palloc_free_page (file_name);
   if (!success) {
@@ -175,6 +183,8 @@ process_exit (void)
       delete_mmap_handle(mh);
   }
 #endif
+
+  if(cur->cwd) dir_close (cur->cwd);
 
   struct child_info *l;
   while (!list_empty(&cur->child_list)) {
@@ -595,8 +605,8 @@ install_page (void *upage, void *kpage, bool writable)
 
 }
 
-#ifdef VM
 struct mmap_handler* syscall_get_mmap_handle(mapid_t mapid) {
+#ifdef VM
   struct thread* cur = thread_current();
   struct list_elem *i;
   struct mmap_handler *mh;
@@ -607,9 +617,11 @@ struct mmap_handler* syscall_get_mmap_handle(mapid_t mapid) {
     }
   }
   return NULL;
+#endif
 }
 
 bool delete_mmap_handle(struct mmap_handler *mh) {
+#ifdef VM
   struct thread* cur = thread_current();
   struct list_elem *i;
   struct mmap_handler *tmp_mh;
@@ -626,6 +638,5 @@ bool delete_mmap_handle(struct mmap_handler *mh) {
     }
   }
   return false;
-}
 #endif
-
+}
