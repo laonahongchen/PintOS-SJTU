@@ -37,7 +37,10 @@ For ```exit```, we need to erase all the things we created new.
 For ```wait``` and ```exec```, we need to make sure that even if the child process has already died before we continue in father process, we can still get the answer. So we use a list to save the information of the son. And by using semaphore, we can make it truly wait for the child process. For ```exec()```, we only need to use ```process_create()``` and make sure we have saved the things I mentioned above.
 In this part, all the syscalls which is related to file system is very easy, we only need to use a lock to make sure we do not use them in the same time. And then we only need to call the functions.
 
+This part is extremely hard in the part of design how to make them run successfully no matter which order they are finishing. My design is to let them be outside in the threads, this may cost a few more memory but it makes it easy to coding. Also, my design of syscalls which pass the arguments again in the c code, will cause slightly more time but makes it much easier to code and for code to be understood.
+
 ---- Denying Writes to Excutables ----
+
 When we start a process, we have to deny write to it, so we do this in ```load()``` function where we load an excutable to kernel and make it run. And when a thread exit, we change it to writeable.
 
 **Project 3**
